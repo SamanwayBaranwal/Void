@@ -1,0 +1,8 @@
+
+<svg width="700" height="160" viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg">
+  <rect x="4" y="4" width="692" height="152" rx="70" fill="#111111" stroke="#222222" stroke-width="2"/>
+  <circle cx="75" cy="80" r="30" fill="#FF4D4D"/>
+  <text x="140" y="98" fill="#FF4D4D" font-family="monospace" font-size="48" font-weight="700">
+    OVERDUE
+  </text>
+</svg>

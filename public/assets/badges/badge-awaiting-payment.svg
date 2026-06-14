@@ -1,0 +1,8 @@
+
+<svg width="900" height="160" viewBox="0 0 900 160" xmlns="http://www.w3.org/2000/svg">
+  <rect x="4" y="4" width="892" height="152" rx="70" fill="#111111" stroke="#222222" stroke-width="2"/>
+  <circle cx="75" cy="80" r="30" fill="#6B7280"/>
+  <text x="140" y="98" fill="#F5F5F5" font-family="monospace" font-size="48" font-weight="700">
+    AWAITING PAYMENT
+  </text>
+</svg>
