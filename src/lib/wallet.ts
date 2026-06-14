@@ -47,7 +47,7 @@ const TOKEN_ADDRESSES: Record<string, Record<string, string>> = {
 export async function registerWalletAddress(
   privyId: string,
   address: string,
-  label = 'Privy Wallet',
+  _label = 'Privy Wallet',
   isPrimary = true,
 ): Promise<void> {
   // Check if this address is already saved for this user
@@ -85,7 +85,7 @@ export async function registerWalletAddress(
 export async function importWalletAddress(
   privyId: string,
   address: string,
-  label: string,
+  _label: string,
 ): Promise<void> {
   const { data: existing } = await supabase
     .from('crypto_wallets')
