@@ -221,10 +221,10 @@ export default function Landing() {
         }}>
 
           {/* LEFT — text (one centered block) */}
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: isMobile ? 'auto' : '560px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: isMobile ? 'center' : 'stretch', textAlign: isMobile ? 'center' : 'left', minHeight: isMobile ? 'auto' : '560px' }}>
             {/* Tag pill */}
             <div style={{
-              display: 'inline-flex', alignSelf: 'flex-start', alignItems: 'center', gap: '9px',
+              display: 'inline-flex', alignSelf: isMobile ? 'center' : 'flex-start', alignItems: 'center', gap: '9px',
               background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.1)',
               borderRadius: '5px', padding: '8px 16px', marginBottom: '22px', position: 'relative',
             }}>
@@ -237,22 +237,23 @@ export default function Landing() {
 
             {/* VOID wordmark — large, real pixel logo cropped + crisp */}
             <div style={{ marginBottom: '22px' }}>
-              <Wordmark h={120} />
+              <Wordmark h={isMobile ? 78 : 120} />
             </div>
 
             {/* Tagline */}
-            <p style={{ fontSize: '24px', fontWeight: 600, color: '#F5F5F5', marginBottom: '14px', lineHeight: 1.25 }}>
+            <p style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: 600, color: '#F5F5F5', marginBottom: '14px', lineHeight: 1.25 }}>
               The invoice layer for Web3
             </p>
 
             {/* Description */}
-            <p style={{ fontSize: '14px', color: '#9CA3AF', lineHeight: 1.8, marginBottom: '32px', maxWidth: '400px' }}>
-              Create, send, and track crypto invoices.<br />
+            <p style={{ fontSize: isMobile ? '13px' : '14px', color: '#9CA3AF', lineHeight: 1.8, marginBottom: '32px', maxWidth: '400px' }}>
+              Create, send, and track crypto invoices.
+              {isMobile ? ' ' : <br />}
               Built for freelancers, studios, and DAOs.
             </p>
 
             {/* Buttons */}
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', justifyContent: isMobile ? 'center' : 'flex-start', marginBottom: '28px', flexWrap: 'wrap' }}>
               <button
                 onClick={() => navigate('/auth')}
                 style={{
@@ -296,7 +297,30 @@ export default function Landing() {
           </div>
 
           {/* RIGHT — Ash + invoice */}
-          <div style={{ position: 'relative', minHeight: isMobile ? '440px' : '620px' }}>
+          <div style={{ position: 'relative', minHeight: isMobile ? 'auto' : '620px' }}>
+
+            {/* ── MOBILE: clean centered stack (mascot, then invoice — no overlap) ── */}
+            {isMobile && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '28px' }}>
+                <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{
+                    position: 'absolute', bottom: '14px', left: '50%', transform: 'translateX(-50%)',
+                    width: '230px', height: '54px',
+                    background: 'radial-gradient(ellipse at center, rgba(60,255,180,0.5) 0%, transparent 70%)',
+                    filter: 'blur(16px)', borderRadius: '50%',
+                  }} />
+                  <img src="/assets/ash/ash-master-character.png" alt="Ash"
+                    style={{ width: '230px', maxWidth: '64%', display: 'block', position: 'relative', zIndex: 1 }}
+                    onError={e => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; }} />
+                </div>
+                <img src="/assets/ash/void-invoice-mockup.png" alt="Invoice preview"
+                  style={{ width: '240px', maxWidth: '80%', display: 'block', borderRadius: '8px', boxShadow: '0 20px 50px rgba(0,0,0,0.8)' }}
+                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+              </div>
+            )}
+
+            {/* ── DESKTOP: layered mascot + floating invoice over grid floor ── */}
+            {!isMobile && <>
 
             {/* CSS perspective grid floor */}
             <div style={{
@@ -360,6 +384,8 @@ export default function Landing() {
                 }}
               />
             </div>
+
+            </>}
           </div>
         </div>
       </section>

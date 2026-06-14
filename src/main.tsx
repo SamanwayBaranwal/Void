@@ -29,8 +29,9 @@ async function bootstrap() {
           },
         },
         appearance: {
-          theme: 'dark',
-          accentColor: '#F5F5F5',
+          theme: '#000000',
+          accentColor: '#00FFB2',
+          showWalletLoginFirst: false,
         },
         // EVM only — avoids MetaMask / Solana injection conflicts
       }}
