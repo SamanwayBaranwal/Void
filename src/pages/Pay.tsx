@@ -230,7 +230,7 @@ export default function Pay() {
             {/* FROM / TO */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
               {[
-                { label: 'FROM', name: profile?.display_name, company: profile?.business_name, email: profile?.email, lines: fromLines, tax: profile?.tax_id },
+                { label: 'FROM', name: profile?.business_name || (profile?.display_name && profile.display_name !== 'My Account' ? profile.display_name : 'Your business name'), company: profile?.business_name ? (profile?.display_name && profile.display_name !== 'My Account' ? profile.display_name : null) : null, email: profile?.email, lines: fromLines, tax: profile?.tax_id },
                 { label: 'TO',   name: client?.name,           company: client?.company,        email: client?.email,  lines: [],        tax: null },
               ].map((b, i) => (
                 <div key={i} style={{ background: '#050505', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', padding: '14px' }}>

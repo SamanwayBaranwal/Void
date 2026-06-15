@@ -40,6 +40,13 @@
     padding: 0;
   }
 
+  html, body {
+    /* Prevent stray-wide elements from zooming the whole page out on mobile.
+       Inner overflow-x:auto containers (tables, tabs) still scroll fine. */
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
   body {
     background-color: #000000;
     background-image:

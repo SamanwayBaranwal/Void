@@ -246,9 +246,18 @@ export default function InvoiceDetail() {
               </div>
 
               {/* FROM / TO */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginBottom: '32px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '16px' : '32px', marginBottom: '32px' }}>
                 {[
-                  { label: 'FROM', icon: 'dots', name: profile?.display_name || 'Your Studio', wallet: embeddedWallet?.address, email: profile?.email, site: profile?.website, sub: profile?.business_name },
+                  {
+                    label: 'FROM', icon: 'dots',
+                    // Prefer business name, then real display name (ignore the "My Account" default)
+                    name: profile?.business_name
+                      || (profile?.display_name && profile.display_name !== 'My Account' ? profile.display_name : 'Your business name'),
+                    wallet: embeddedWallet?.address,
+                    email: profile?.email,
+                    site: profile?.website,
+                    sub: profile?.business_name && profile?.display_name && profile.display_name !== 'My Account' ? profile.display_name : null,
+                  },
                   { label: 'TO', icon: 'user', name: client?.name || '—', wallet: client?.wallet_address, email: client?.email, site: null, sub: client?.company },
                 ].map((b, i) => (
                   <div key={i}>

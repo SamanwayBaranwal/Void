@@ -110,13 +110,13 @@ export default function Profile() {
         </div>
 
         {/* Tab bar */}
-        <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', maxWidth: '100%', overflowX: 'auto', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '24px', WebkitOverflowScrolling: 'touch' }}>
           {TABS.map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               style={{
-                display: 'flex', alignItems: 'center', gap: '7px',
+                display: 'flex', alignItems: 'center', gap: '7px', flexShrink: 0, whiteSpace: 'nowrap',
                 background: 'none', border: 'none', cursor: 'pointer',
-                padding: '10px 16px',
+                padding: isMobile ? '10px 13px' : '10px 16px',
                 fontSize: '13px', fontWeight: 500,
                 fontFamily: 'JetBrains Mono, monospace',
                 color: activeTab === tab.key ? '#F5F5F5' : '#6B7280',
