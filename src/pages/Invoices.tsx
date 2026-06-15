@@ -37,6 +37,7 @@ export default function Invoices() {
   const [description, setDesc]  = useState('');
   const [amountUsd, setAmount]  = useState('');
   const [dueDate, setDueDate]   = useState('');
+  const [linkTtl, setLinkTtl]   = useState('30'); // pay-link validity (minutes; 0 = never)
   const [formError, setFormErr] = useState('');
 
   useEffect(() => { if (privyUser) loadData(); }, [privyUser]);
@@ -56,7 +57,7 @@ export default function Invoices() {
     e.preventDefault();
     setFormErr('');
     if (!privyUser) return;
-    const { error } = await supabase.from('invoices').insert({
+    const base: Record<string, any> = {
       privy_id: privyUser.id,
       client_id: selectedClient || null,
       invoice_number: `INV-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000).padStart(4, '0')}`,
@@ -64,9 +65,14 @@ export default function Invoices() {
       amount_usd: parseFloat(amountUsd),
       due_date: dueDate || null,
       status: 'pending',
-    });
+    };
+    let { error } = await supabase.from('invoices').insert({ ...base, link_ttl_minutes: parseInt(linkTtl, 10) });
+    // If the link_ttl_minutes column isn't there yet, fall back to a plain insert
+    if (error && /link_ttl_minutes/.test(error.message)) {
+      ({ error } = await supabase.from('invoices').insert(base));
+    }
     if (error) { setFormErr(error.message); return; }
-    setSelectedClient(''); setTitle(''); setDesc(''); setAmount(''); setDueDate('');
+    setSelectedClient(''); setTitle(''); setDesc(''); setAmount(''); setDueDate(''); setLinkTtl('30');
     setShowForm(false);
     loadData();
   };
@@ -324,6 +330,20 @@ export default function Invoices() {
                     <label style={{ display: 'block', fontSize: '11px', color: '#6B7280', marginBottom: '5px', fontFamily: 'JetBrains Mono, monospace' }}>Due Date</label>
                     <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} style={{ ...inputStyle, colorScheme: 'dark' }} />
                   </div>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11px', color: '#6B7280', marginBottom: '5px', fontFamily: 'JetBrains Mono, monospace' }}>Payment link valid for</label>
+                  <select value={linkTtl} onChange={e => setLinkTtl(e.target.value)}
+                    style={{ ...inputStyle, fontFamily: 'JetBrains Mono, monospace', fontSize: '13px', colorScheme: 'dark', cursor: 'pointer' }}>
+                    <option value="30">30 minutes</option>
+                    <option value="60">1 hour</option>
+                    <option value="1440">24 hours</option>
+                    <option value="10080">7 days</option>
+                    <option value="0">Never expires</option>
+                  </select>
+                  <p style={{ fontSize: '10px', color: '#444444', fontFamily: 'JetBrains Mono, monospace', marginTop: '5px' }}>
+                    Pick a longer window if your client pays from an exchange (Binance, Coinbase…).
+                  </p>
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '11px', color: '#6B7280', marginBottom: '5px', fontFamily: 'JetBrains Mono, monospace' }}>Description</label>

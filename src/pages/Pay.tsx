@@ -7,9 +7,6 @@ import {
 } from '../lib/wallet';
 import { Copy, Check, X, Loader, Wallet, ShieldCheck, Zap, Lock } from 'lucide-react';
 
-// Pay links are valid for 30 minutes after the invoice is created
-const LINK_TTL_MS = 30 * 60 * 1000;
-
 /** Address with the leading 0x+chars and trailing chars highlighted, so the
  *  payer can verify they're sending to the right place — no mistakes. */
 function AddressHL({ address, size = 12 }: { address: string; size?: number }) {
@@ -124,10 +121,18 @@ export default function Pay() {
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
-  const expiresAt = invoice ? new Date(invoice.created_at).getTime() + LINK_TTL_MS : 0;
-  const msLeft = Math.max(0, expiresAt - now);
-  const expired = !!invoice && invoice.status !== 'paid' && msLeft <= 0;
-  const countdown = `${String(Math.floor(msLeft / 60000)).padStart(2, '0')}:${String(Math.floor((msLeft % 60000) / 1000)).padStart(2, '0')}`;
+  const ttlMin = invoice?.link_ttl_minutes ?? 30;          // per-invoice validity
+  const neverExpires = ttlMin === 0;
+  const expiresAt = invoice && !neverExpires ? new Date(invoice.created_at).getTime() + ttlMin * 60000 : 0;
+  const msLeft = neverExpires ? Infinity : Math.max(0, expiresAt - now);
+  const expired = !!invoice && invoice.status !== 'paid' && !neverExpires && msLeft <= 0;
+  const fmtLeft = () => {
+    if (neverExpires) return '';
+    const totalMin = Math.floor(msLeft / 60000);
+    if (totalMin >= 60) { const h = Math.floor(totalMin / 60); return `${h}h ${totalMin % 60}m`; }
+    return `${String(totalMin).padStart(2, '0')}:${String(Math.floor((msLeft % 60000) / 1000)).padStart(2, '0')}`;
+  };
+  const countdown = fmtLeft();
 
   // ── Pay directly from a browser wallet ──────────────────
   const [paying, setPaying] = useState(false);
@@ -185,8 +190,9 @@ export default function Pay() {
 
       const poll = async () => {
         if (cancelled || !baselineRef.current) return;
-        // Stop watching once the 30-minute window closes
-        if (Date.now() > new Date(invoice.created_at).getTime() + LINK_TTL_MS) {
+        // Stop watching once the link's validity window closes (0 = never)
+        const ttl = invoice.link_ttl_minutes ?? 30;
+        if (ttl > 0 && Date.now() > new Date(invoice.created_at).getTime() + ttl * 60000) {
           setWatching(false); return;
         }
         const hit = await scanAllChainsForPayment(
@@ -336,13 +342,15 @@ export default function Pay() {
                   <Wallet size={16} /> PAY NOW
                 </button>
 
-                {/* Countdown — link valid 30 min */}
-                <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: msLeft < 5 * 60000 ? '#FF4D4D' : '#FBBF24', display: 'inline-block' }} />
-                  <span style={{ ...MONO, fontSize: '11px', color: '#6B7280' }}>
-                    This payment link expires in <span style={{ color: msLeft < 5 * 60000 ? '#FF4D4D' : '#F5F5F5', fontWeight: 600 }}>{countdown}</span>
-                  </span>
-                </div>
+                {/* Countdown — only when the link has an expiry */}
+                {!neverExpires && (
+                  <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px' }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: msLeft < 5 * 60000 ? '#FF4D4D' : '#FBBF24', display: 'inline-block' }} />
+                    <span style={{ ...MONO, fontSize: '11px', color: '#6B7280' }}>
+                      This payment link expires in <span style={{ color: msLeft < 5 * 60000 ? '#FF4D4D' : '#F5F5F5', fontWeight: 600 }}>{countdown}</span>
+                    </span>
+                  </div>
+                )}
 
                 {/* Live on-chain verification status */}
                 {watching && (
