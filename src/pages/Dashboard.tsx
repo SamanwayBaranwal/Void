@@ -148,6 +148,34 @@ export default function Dashboard() {
           </button>
         </div>
 
+        {/* First-time setup — shown until the profile is completed */}
+        {!profile?.business_name && (!profile?.display_name || profile.display_name === 'My Account') && (
+          <div style={{
+            position: 'relative', background: '#050505',
+            border: '1px solid rgba(0,255,178,0.25)', borderRadius: '8px',
+            padding: isMobile ? '18px' : '22px 24px', marginBottom: '20px',
+            display: 'flex', alignItems: 'center', gap: isMobile ? '14px' : '20px',
+            flexDirection: isMobile ? 'column' : 'row', textAlign: isMobile ? 'center' : 'left',
+            boxShadow: '0 0 40px rgba(0,255,178,0.05)',
+          }}>
+            <img src="/assets/ash/ash-welcoming-onboarding.png" alt="" width={isMobile ? 90 : 96}
+              style={{ flexShrink: 0 }} onError={e => (e.currentTarget.style.display = 'none')} />
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: '10px', color: '#00FFB2', fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.14em', marginBottom: '6px' }}>● NEXT STEP</p>
+              <p style={{ fontSize: '15px', fontWeight: 700, color: '#F5F5F5', fontFamily: 'JetBrains Mono, monospace', marginBottom: '6px' }}>Set up your profile</p>
+              <p style={{ fontSize: '12px', color: '#9CA3AF', fontFamily: 'JetBrains Mono, monospace', lineHeight: 1.65, marginBottom: '14px' }}>
+                Add your business name, email, and details so your invoices show <span style={{ color: '#F5F5F5' }}>your</span> info — not a placeholder. Takes 1 minute.
+              </p>
+              <button onClick={() => navigate('/profile')}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', background: '#00FFB2', color: '#000000', border: 'none', borderRadius: '5px', padding: '9px 18px', fontSize: '13px', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', transition: 'opacity 0.15s' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                Complete Profile <ChevronRight size={14} strokeWidth={2.5} />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Stat cards */}
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4,1fr)', gap: '12px', marginBottom: '20px' }}>
           {([

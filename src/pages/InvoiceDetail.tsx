@@ -8,6 +8,7 @@ import {
 } from '../lib/wallet';
 import Layout from '../components/Layout';
 import { useIsMobile } from '../lib/useIsMobile';
+import { downloadInvoicePdf } from '../lib/invoicePdf';
 import { Download, CheckCircle, QrCode, User, ArrowLeft, Share2, Check, Loader } from 'lucide-react';
 
 export default function InvoiceDetail() {
@@ -32,6 +33,20 @@ export default function InvoiceDetail() {
     navigator.clipboard.writeText(payLink);
     setLinkCopied(true);
     setTimeout(() => setLinkCopied(false), 2000);
+  };
+
+  const invoiceRef = useRef<HTMLDivElement>(null);
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const handleDownloadPdf = async () => {
+    if (!invoiceRef.current) return;
+    setPdfBusy(true);
+    try {
+      await downloadInvoicePdf(invoiceRef.current, `invoice-${invoice?.invoice_number || 'void'}.pdf`);
+    } catch (err) {
+      console.error('PDF export failed:', err);
+    } finally {
+      setPdfBusy(false);
+    }
   };
 
   useEffect(() => { if (privyUser) loadInvoice(); }, [id, privyUser]);
@@ -170,9 +185,9 @@ export default function InvoiceDetail() {
               style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', fontSize: '12px', fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', borderRadius: '6px', background: 'transparent', color: linkCopied ? '#00FFB2' : '#F5F5F5', border: `1px solid ${linkCopied ? 'rgba(0,255,178,0.4)' : 'rgba(255,255,255,0.12)'}`, transition: 'all 0.15s' }}>
               {linkCopied ? <><Check size={13} /> Link Copied</> : <><Share2 size={13} /> Copy Pay Link</>}
             </button>
-            <button onClick={() => window.print()}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', borderRadius: '6px', background: '#F5F5F5', color: '#080808', border: 'none' }}>
-              <Download size={13} /> Download PDF
+            <button onClick={handleDownloadPdf} disabled={pdfBusy}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', cursor: pdfBusy ? 'default' : 'pointer', borderRadius: '6px', background: '#F5F5F5', color: '#080808', border: 'none', opacity: pdfBusy ? 0.7 : 1 }}>
+              {pdfBusy ? <><Loader size={13} className="void-spin" /> Generating…</> : <><Download size={13} /> Download PDF</>}
             </button>
           </div>
         </div>
@@ -181,7 +196,7 @@ export default function InvoiceDetail() {
 
           {/* ── Left — INVOICE DOCUMENT (matches VOID reference) ── */}
           <div>
-            <div className="void-card invoice-doc" style={{
+            <div ref={invoiceRef} className="void-card invoice-doc" style={{
               position: 'relative', background: '#000000',
               border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px',
               padding: isMobile ? '24px 18px 20px' : '40px 40px 28px', overflow: 'hidden',
