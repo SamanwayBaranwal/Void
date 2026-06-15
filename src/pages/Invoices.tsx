@@ -126,7 +126,7 @@ export default function Invoices() {
         {/* Tabs + Search */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: isMobile ? 'wrap' : 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '0' }}>
           {/* Tabs */}
-          <div style={{ display: 'flex', gap: '0', overflowX: 'auto', maxWidth: '100%' }}>
+          <div className="no-scrollbar" style={{ display: 'flex', gap: '0', overflowX: 'auto', overflowY: 'hidden', maxWidth: '100%' }}>
             {TABS.map(tab => (
               <button
                 key={tab}

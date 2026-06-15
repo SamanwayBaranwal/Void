@@ -9,11 +9,21 @@ export async function downloadInvoicePdf(el: HTMLElement, filename: string): Pro
   ]);
   const html2canvas = (html2canvasMod as any).default || html2canvasMod;
 
-  // Temporarily drop the faint card border/radius so the PDF has no white edge
-  const prevBorder = el.style.border;
-  const prevRadius = el.style.borderRadius;
+  // Snapshot inline styles we override, so we can restore them after capture
+  const saved = {
+    border: el.style.border,
+    borderRadius: el.style.borderRadius,
+    width: el.style.width,
+    maxWidth: el.style.maxWidth,
+    padding: el.style.padding,
+  };
+  // Render at a fixed, clean invoice width + consistent padding so the PDF
+  // is always well-aligned (not cramped to a narrow screen / mobile column)
   el.style.border = 'none';
   el.style.borderRadius = '0';
+  el.style.width = '800px';
+  el.style.maxWidth = '800px';
+  el.style.padding = '56px';
 
   let canvas: HTMLCanvasElement;
   try {
@@ -22,10 +32,14 @@ export async function downloadInvoicePdf(el: HTMLElement, filename: string): Pro
       scale: 3,            // high-res capture → crisp text
       useCORS: true,
       logging: false,
+      windowWidth: 900,
     });
   } finally {
-    el.style.border = prevBorder;
-    el.style.borderRadius = prevRadius;
+    el.style.border = saved.border;
+    el.style.borderRadius = saved.borderRadius;
+    el.style.width = saved.width;
+    el.style.maxWidth = saved.maxWidth;
+    el.style.padding = saved.padding;
   }
 
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });

@@ -5,6 +5,20 @@
 @keyframes void-spin { to { transform: rotate(360deg); } }
 .void-spin { animation: void-spin 0.9s linear infinite; }
 
+/* Dark, thin, button-less scrollbars everywhere (kills the ugly white
+   Windows scrollbar arrows that showed up on overflow-x containers) */
+* { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.24); }
+::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* Horizontal-only scroll rows (tabs) — no vertical bar, no visible track */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
 /* Skeleton shimmer for loading placeholders */
 @keyframes void-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 .skeleton {

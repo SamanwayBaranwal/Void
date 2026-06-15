@@ -110,7 +110,7 @@ export default function Profile() {
         </div>
 
         {/* Tab bar */}
-        <div style={{ display: 'flex', maxWidth: '100%', overflowX: 'auto', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '24px', WebkitOverflowScrolling: 'touch' }}>
+        <div className="no-scrollbar" style={{ display: 'flex', maxWidth: '100%', overflowX: 'auto', overflowY: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '24px', WebkitOverflowScrolling: 'touch' }}>
           {TABS.map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               style={{

@@ -101,7 +101,7 @@ export default function Payments() {
 
         {/* Tabs + Search */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: isMobile ? 'wrap' : 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ display: 'flex', overflowX: 'auto' }}>
+          <div className="no-scrollbar" style={{ display: 'flex', overflowX: 'auto', overflowY: 'hidden' }}>
             {TABS.map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
                 style={{
