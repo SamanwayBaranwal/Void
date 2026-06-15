@@ -493,6 +493,14 @@ export default function Pay() {
               ))}
             </div>
 
+            {/* Paying from an exchange */}
+            <div style={{ background: 'rgba(0,255,178,0.04)', border: '1px solid rgba(0,255,178,0.15)', borderRadius: '6px', padding: '12px 14px', marginBottom: '16px' }}>
+              <p style={{ ...MONO, fontSize: '10px', color: '#00FFB2', letterSpacing: '0.06em', marginBottom: '8px' }}>● PAYING FROM AN EXCHANGE? (BINANCE · COINBASE · OKX…)</p>
+              <p style={{ ...MONO, fontSize: '11px', color: '#9CA3AF', lineHeight: 1.7 }}>
+                Withdraw exactly <strong style={{ color: '#F5F5F5' }}>{Number(invoice.amount_usd).toLocaleString('en-US', { minimumFractionDigits: 2 })} {selectedToken}</strong> on the <strong style={{ color: '#F5F5F5' }}>{chainName}</strong> network to the address above. No wallet needed — we detect &amp; confirm it automatically.
+              </p>
+            </div>
+
             {/* Warning */}
             <p style={{ fontSize: '12px', color: '#6B7280', textAlign: 'center', lineHeight: 1.55, marginBottom: '16px' }}>
               Send only <strong style={{ color: '#F5F5F5' }}>{selectedToken}</strong> on <strong style={{ color: '#F5F5F5' }}>{chainName}</strong> to this address.<br />
