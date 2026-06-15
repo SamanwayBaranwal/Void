@@ -202,6 +202,18 @@ export default function InvoiceDetail() {
             <ArrowLeft size={14} /> Invoices
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {/* Pay-link validity chip */}
+            {invoice.status !== 'paid' && (() => {
+              const min = invoice.link_ttl_minutes ?? 30;
+              const label = min === 0 ? 'never expires' : min < 60 ? `${min}m` : min < 1440 ? `${min / 60}h` : `${min / 1440}d`;
+              const isExpired = min > 0 && Date.now() > new Date(invoice.created_at).getTime() + min * 60000;
+              return (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '6px 10px', fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', borderRadius: '6px', background: isExpired ? 'rgba(255,77,77,0.06)' : 'rgba(255,255,255,0.03)', color: isExpired ? '#FF4D4D' : '#6B7280', border: `1px solid ${isExpired ? 'rgba(255,77,77,0.25)' : 'rgba(255,255,255,0.08)'}` }}>
+                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: isExpired ? '#FF4D4D' : '#00FFB2', display: 'inline-block' }} />
+                  {isExpired ? 'Link expired' : `Link: ${label}`}
+                </span>
+              );
+            })()}
             <button onClick={copyPayLink}
               style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', fontSize: '12px', fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', borderRadius: '6px', background: 'transparent', color: linkCopied ? '#00FFB2' : '#F5F5F5', border: `1px solid ${linkCopied ? 'rgba(0,255,178,0.4)' : 'rgba(255,255,255,0.12)'}`, transition: 'all 0.15s' }}>
               {linkCopied ? <><Check size={13} /> Link Copied</> : <><Share2 size={13} /> Copy Pay Link</>}
