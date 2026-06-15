@@ -320,6 +320,68 @@ export async function scanAllChainsForPayment(
   return results.find(r => r !== null) || null;
 }
 
+// Minimal params for wallet_addEthereumChain (when the wallet doesn't know the chain)
+const CHAIN_PARAMS: Record<string, any> = {
+  ethereum: { chainId: '0x1',     chainName: 'Ethereum',  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 }, rpcUrls: [RPC_URLS.ethereum], blockExplorerUrls: ['https://etherscan.io'] },
+  base:     { chainId: '0x2105',  chainName: 'Base',      nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 }, rpcUrls: [RPC_URLS.base],     blockExplorerUrls: ['https://basescan.org'] },
+  polygon:  { chainId: '0x89',    chainName: 'Polygon',   nativeCurrency: { name: 'POL',   symbol: 'POL', decimals: 18 }, rpcUrls: [RPC_URLS.polygon],  blockExplorerUrls: ['https://polygonscan.com'] },
+  arbitrum: { chainId: '0xa4b1',  chainName: 'Arbitrum',  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 }, rpcUrls: [RPC_URLS.arbitrum], blockExplorerUrls: ['https://arbiscan.io'] },
+  optimism: { chainId: '0xa',     chainName: 'Optimism',  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 }, rpcUrls: [RPC_URLS.optimism], blockExplorerUrls: ['https://optimistic.etherscan.io'] },
+};
+
+/**
+ * Pay an invoice directly from a connected browser wallet (MetaMask, Coinbase,
+ * Rabby, etc.) — switches to the right chain and sends a USDC/USDT transfer.
+ * Returns the transaction hash. Throws a friendly error if no wallet / rejected.
+ */
+export async function payWithWallet(
+  chain: string,
+  token: 'USDC' | 'USDT',
+  recipient: string,
+  amountUsd: number,
+): Promise<{ txHash: string }> {
+  const eth = (window as any).ethereum;
+  if (!eth) throw new Error('No browser wallet found. Use the QR code, or install MetaMask / Coinbase Wallet.');
+
+  const tokenAddress = TOKEN_ADDRESSES[chain]?.[token];
+  if (!tokenAddress) throw new Error(`${token} is not supported on ${chain}.`);
+
+  const targetHex = '0x' + getChainId(chain).toString(16);
+  await eth.request({ method: 'eth_requestAccounts' });
+
+  // Ensure the wallet is on the right network
+  try {
+    await eth.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: targetHex }] });
+  } catch (e: any) {
+    if (e?.code === 4902 && CHAIN_PARAMS[chain]) {
+      await eth.request({ method: 'wallet_addEthereumChain', params: [CHAIN_PARAMS[chain]] });
+    } else if (e?.code !== 4001) {
+      // ignore other switch errors; the send below will fail clearly if wrong
+    } else {
+      throw new Error('Network switch was rejected.');
+    }
+  }
+
+  const provider = new ethers.BrowserProvider(eth);
+  const signer = await provider.getSigner();
+  const erc20 = new ethers.Contract(
+    tokenAddress,
+    ['function transfer(address to, uint256 amount) returns (bool)'],
+    signer,
+  );
+  // USDC/USDT use 6 decimals
+  const amount = ethers.parseUnits(amountUsd.toFixed(2), 6);
+
+  try {
+    const tx = await erc20.transfer(recipient, amount);
+    await tx.wait(1);
+    return { txHash: tx.hash };
+  } catch (e: any) {
+    if (e?.code === 'ACTION_REJECTED' || e?.code === 4001) throw new Error('Payment was cancelled.');
+    throw new Error(e?.shortMessage || e?.message || 'Payment failed.');
+  }
+}
+
 /** Capture the current block on every chain — the baseline for payment monitoring. */
 export async function captureBaselineBlocks(): Promise<Record<string, number>> {
   const entries = await Promise.all(

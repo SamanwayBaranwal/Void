@@ -3,9 +3,28 @@ import { useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import {
   generatePaymentInstructionQR, SUPPORTED_CHAINS, SUPPORTED_TOKENS,
-  captureBaselineBlocks, scanAllChainsForPayment, getExplorerTxUrl, type OnchainPayment,
+  captureBaselineBlocks, scanAllChainsForPayment, getExplorerTxUrl, payWithWallet, type OnchainPayment,
 } from '../lib/wallet';
-import { Copy, Check, X, Loader } from 'lucide-react';
+import { Copy, Check, X, Loader, Wallet, ShieldCheck, Zap, Lock } from 'lucide-react';
+
+// Pay links are valid for 30 minutes after the invoice is created
+const LINK_TTL_MS = 30 * 60 * 1000;
+
+/** Address with the leading 0x+chars and trailing chars highlighted, so the
+ *  payer can verify they're sending to the right place — no mistakes. */
+function AddressHL({ address, size = 12 }: { address: string; size?: number }) {
+  if (!address) return null;
+  const head = address.slice(0, 6);   // 0x + 4
+  const mid = address.slice(6, -4);
+  const tail = address.slice(-4);
+  return (
+    <code style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: size, wordBreak: 'break-all', lineHeight: 1.5 }}>
+      <span style={{ color: '#00FFB2', fontWeight: 700, background: 'rgba(0,255,178,0.08)', padding: '1px 2px', borderRadius: '2px' }}>{head}</span>
+      <span style={{ color: '#4B5563' }}>{mid}</span>
+      <span style={{ color: '#00FFB2', fontWeight: 700, background: 'rgba(0,255,178,0.08)', padding: '1px 2px', borderRadius: '2px' }}>{tail}</span>
+    </code>
+  );
+}
 
 const GRID_BG: React.CSSProperties = {
   minHeight: '100vh',
@@ -99,6 +118,33 @@ export default function Pay() {
   const [watching, setWatching]     = useState(false);
   const baselineRef = useRef<Record<string, number> | null>(null);
 
+  // ── 30-minute link expiry + live countdown ──────────────
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const expiresAt = invoice ? new Date(invoice.created_at).getTime() + LINK_TTL_MS : 0;
+  const msLeft = Math.max(0, expiresAt - now);
+  const expired = !!invoice && invoice.status !== 'paid' && msLeft <= 0;
+  const countdown = `${String(Math.floor(msLeft / 60000)).padStart(2, '0')}:${String(Math.floor((msLeft % 60000) / 1000)).padStart(2, '0')}`;
+
+  // ── Pay directly from a browser wallet ──────────────────
+  const [paying, setPaying] = useState(false);
+  const [payError, setPayError] = useState('');
+  const handlePayWithWallet = async () => {
+    if (!invoice || !walletAddress) return;
+    setPaying(true); setPayError('');
+    try {
+      const { txHash } = await payWithWallet(selectedChain, selectedToken as 'USDC' | 'USDT', walletAddress, Number(invoice.amount_usd));
+      await markPaid({ txHash, chain: selectedChain, token: selectedToken, amount: Number(invoice.amount_usd), from: '' });
+    } catch (e: any) {
+      setPayError(e?.message || 'Payment failed.');
+    } finally {
+      setPaying(false);
+    }
+  };
+
   // Mark the invoice paid (shared by auto-detect + manual fallback)
   const markPaid = async (onchain?: OnchainPayment) => {
     if (!invoice) return;
@@ -139,6 +185,10 @@ export default function Pay() {
 
       const poll = async () => {
         if (cancelled || !baselineRef.current) return;
+        // Stop watching once the 30-minute window closes
+        if (Date.now() > new Date(invoice.created_at).getTime() + LINK_TTL_MS) {
+          setWatching(false); return;
+        }
         const hit = await scanAllChainsForPayment(
           walletAddress, Number(invoice.amount_usd), baselineRef.current,
         );
@@ -175,14 +225,6 @@ export default function Pay() {
     </div>
   );
 
-  /* ─── Ash state ───────────────────────────────────────── */
-  const ashMap: Record<string, { img: string; label: string; color: string }> = {
-    paid:    { img: '/assets/ash/ash-excited-paid.png',            label: 'Payment confirmed. 🖤', color: '#00FFB2' },
-    pending: { img: '/assets/ash/ash-waiting.png',                  label: 'Waiting for payment...', color: '#6B7280' },
-    overdue: { img: '/assets/ash/ash-overdue-unimpressed.png',      label: 'This invoice is overdue.', color: '#FF4D4D' },
-  };
-  const ash = ashMap[invoice.status] || ashMap.pending;
-
   /* ─── From address lines ──────────────────────────────── */
   const fromLines = [
     profile?.street_address,
@@ -194,10 +236,16 @@ export default function Pay() {
     <div style={{ ...GRID_BG, padding: '40px 20px 60px' }}>
 
       {/* ── Top logo ───────────────────────────────────────── */}
-      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-        <img src="/assets/logos/void-logo-white.png" alt="VOID" style={{ width: '80px', margin: '0 auto 8px', display: 'block' }}
-          onError={e => { e.currentTarget.style.display = 'none'; }} />
-        <p style={{ ...MONO, fontSize: '11px', color: '#6B7280', letterSpacing: '0.06em' }}>Secure. Private. Onchain.</p>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '11px', marginBottom: '10px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 8px)', gap: '5px' }}>
+            {Array.from({ length: 9 }).map((_, i) => (
+              <div key={i} style={{ width: '8px', height: '8px', borderRadius: '2px', background: '#FFFFFF', boxShadow: '0 0 6px rgba(255,255,255,0.5)' }} />
+            ))}
+          </div>
+          <span style={{ ...MONO, fontSize: '28px', fontWeight: 800, color: '#FFFFFF', letterSpacing: '0.16em', textShadow: '0 0 24px rgba(255,255,255,0.25)' }}>VOID</span>
+        </div>
+        <p style={{ ...MONO, fontSize: '11px', color: '#6B7280', letterSpacing: '0.12em' }}>SECURE · PRIVATE · ONCHAIN</p>
       </div>
 
       {/* ── Main invoice card ──────────────────────────────── */}
@@ -278,15 +326,23 @@ export default function Pay() {
               <p style={{ fontSize: '14px', color: '#6B7280' }}>USD · Payable in USDC or USDT</p>
             </div>
 
-            {/* CTA */}
-            {invoice.status !== 'paid' && walletAddress && (
+            {/* CTA — active (not paid, not expired) */}
+            {invoice.status !== 'paid' && walletAddress && !expired && (
               <>
                 <button onClick={() => setShowModal(true)}
-                  style={{ width: '100%', padding: '14px', background: '#F5F5F5', color: '#000000', border: 'none', borderRadius: '4px', fontSize: '15px', fontWeight: 600, fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'opacity 0.15s' }}
+                  style={{ width: '100%', padding: '15px', background: '#F5F5F5', color: '#000000', border: 'none', borderRadius: '4px', fontSize: '15px', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'opacity 0.15s' }}
                   onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
                   onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
-                  VIEW PAYMENT DETAILS →
+                  <Wallet size={16} /> PAY NOW
                 </button>
+
+                {/* Countdown — link valid 30 min */}
+                <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: msLeft < 5 * 60000 ? '#FF4D4D' : '#FBBF24', display: 'inline-block' }} />
+                  <span style={{ ...MONO, fontSize: '11px', color: '#6B7280' }}>
+                    This payment link expires in <span style={{ color: msLeft < 5 * 60000 ? '#FF4D4D' : '#F5F5F5', fontWeight: 600 }}>{countdown}</span>
+                  </span>
+                </div>
 
                 {/* Live on-chain verification status */}
                 {watching && (
@@ -295,12 +351,22 @@ export default function Pay() {
                     <div>
                       <p style={{ ...MONO, fontSize: '12px', color: '#00FFB2', fontWeight: 500 }}>Auto-verifying on-chain…</p>
                       <p style={{ ...MONO, fontSize: '10px', color: '#6B7280', marginTop: '2px' }}>
-                        Watching all chains for your USDC/USDT payment. This page confirms automatically.
+                        Confirms automatically the moment your USDC/USDT payment lands.
                       </p>
                     </div>
                   </div>
                 )}
               </>
+            )}
+
+            {/* Expired state */}
+            {expired && (
+              <div style={{ padding: '16px', background: 'rgba(255,77,77,0.06)', border: '1px solid rgba(255,77,77,0.22)', borderRadius: '6px', textAlign: 'center' }}>
+                <p style={{ ...MONO, fontSize: '13px', color: '#FF4D4D', fontWeight: 600, marginBottom: '4px' }}>⊘ This payment link has expired</p>
+                <p style={{ ...MONO, fontSize: '11px', color: '#6B7280', lineHeight: 1.6 }}>
+                  Links are valid for 30 minutes for your security. Ask the sender to share a fresh invoice link.
+                </p>
+              </div>
             )}
 
             {/* Paid state CTA */}
@@ -324,11 +390,19 @@ export default function Pay() {
         </PixelCard>
       </div>
 
-      {/* ── Ash state ──────────────────────────────────────── */}
-      <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-        <img src={ash.img} alt="" width="210" style={{ margin: '0 auto 12px', display: 'block' }}
-          onError={e => e.currentTarget.style.display = 'none'} />
-        <p style={{ ...MONO, fontSize: '13px', color: ash.color, letterSpacing: '0.04em' }}>{ash.label}</p>
+      {/* ── Trust badges ───────────────────────────────────── */}
+      <div style={{ maxWidth: '580px', margin: '0 auto 40px', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '10px' }}>
+        {[
+          { Icon: ShieldCheck, title: 'Non-custodial', desc: 'Paid wallet-to-wallet. VOID never holds funds.' },
+          { Icon: Zap,         title: 'Auto-verified', desc: 'Confirmed on-chain in seconds, automatically.' },
+          { Icon: Lock,        title: 'No sign-up',    desc: 'Pay directly. No account, no card needed.' },
+        ].map(({ Icon, title, desc }) => (
+          <div key={title} style={{ background: '#050505', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', padding: '14px' }}>
+            <Icon size={16} color="#00FFB2" strokeWidth={1.8} />
+            <p style={{ ...MONO, fontSize: '12px', fontWeight: 600, color: '#F5F5F5', margin: '8px 0 4px' }}>{title}</p>
+            <p style={{ ...MONO, fontSize: '10px', color: '#6B7280', lineHeight: 1.5 }}>{desc}</p>
+          </div>
+        ))}
       </div>
 
       {/* ── Footer ─────────────────────────────────────────── */}
@@ -389,11 +463,14 @@ export default function Pay() {
               </div>
             )}
 
-            {/* Wallet address */}
+            {/* Wallet address — first & last chars highlighted to prevent mistakes */}
             <div style={{ background: '#000000', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', padding: '14px', marginBottom: '12px' }}>
-              <p style={{ ...MONO, fontSize: '10px', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>SEND TO</p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <p style={{ ...MONO, fontSize: '10px', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>SEND TO</p>
+                <span style={{ ...MONO, fontSize: '8px', color: '#00FFB2', letterSpacing: '0.06em' }}>✓ VERIFY HIGHLIGHTED CHARS</span>
+              </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <code style={{ ...MONO, fontSize: '12px', color: '#F5F5F5', wordBreak: 'break-all', flex: 1 }}>{walletAddress}</code>
+                <div style={{ flex: 1, minWidth: 0 }}><AddressHL address={walletAddress} /></div>
                 <button onClick={copyAddress}
                   style={{ width: '32px', height: '32px', background: '#0D0D0D', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '5px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
                   {copied ? <Check size={13} color="#00FFB2" /> : <Copy size={13} color="#6B7280" />}
@@ -422,17 +499,24 @@ export default function Pay() {
               Sending the wrong token may result in permanent loss.
             </p>
 
+            {/* Pay with Wallet — real one-click payment */}
+            <button onClick={handlePayWithWallet} disabled={paying}
+              style={{ width: '100%', padding: '14px', background: '#00FFB2', color: '#000000', border: 'none', borderRadius: '5px', fontSize: '14px', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', cursor: paying ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '10px', opacity: paying ? 0.7 : 1, transition: 'opacity 0.15s' }}>
+              {paying ? <><Loader size={15} className="void-spin" /> Confirm in your wallet…</> : <><Wallet size={15} /> Pay {Number(invoice.amount_usd).toLocaleString('en-US', { minimumFractionDigits: 2 })} {selectedToken} with Wallet</>}
+            </button>
+            {payError && (
+              <p style={{ ...MONO, fontSize: '11px', color: '#FF4D4D', textAlign: 'center', marginBottom: '10px', lineHeight: 1.5 }}>{payError}</p>
+            )}
+
             {/* Auto-verify status */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '16px' }}>
-              <img src="/assets/ash/ash-waiting.png" width="56" alt="" onError={e => e.currentTarget.style.display = 'none'} />
-              <p style={{ ...MONO, fontSize: '12px', color: '#00FFB2', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Loader size={12} className="void-spin" /> Auto-detecting payment on-chain…
-              </p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '14px' }}>
+              <Loader size={12} color="#00FFB2" className="void-spin" />
+              <p style={{ ...MONO, fontSize: '11px', color: '#6B7280' }}>or scan the QR — we auto-detect payment on-chain</p>
             </div>
 
             {/* Close */}
             <button onClick={() => setShowModal(false)}
-              style={{ width: '100%', padding: '12px', background: 'transparent', color: '#6B7280', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', fontSize: '14px', fontWeight: 500, fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', marginBottom: '12px', transition: 'border-color 0.15s, color 0.15s' }}
+              style={{ width: '100%', padding: '11px', background: 'transparent', color: '#6B7280', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', fontSize: '13px', fontWeight: 500, fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', marginBottom: '12px', transition: 'border-color 0.15s, color 0.15s' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = '#444444'; e.currentTarget.style.color = '#F5F5F5'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#6B7280'; }}>
               CLOSE
