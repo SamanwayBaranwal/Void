@@ -8,7 +8,7 @@ import {
 } from '../lib/wallet';
 import Layout from '../components/Layout';
 import { useIsMobile } from '../lib/useIsMobile';
-import { downloadInvoicePdf } from '../lib/invoicePdf';
+import { generateInvoicePdf } from '../lib/invoicePdf';
 import { Download, CheckCircle, QrCode, User, ArrowLeft, Share2, Check, Loader } from 'lucide-react';
 
 export default function InvoiceDetail() {
@@ -35,13 +35,34 @@ export default function InvoiceDetail() {
     setTimeout(() => setLinkCopied(false), 2000);
   };
 
-  const invoiceRef = useRef<HTMLDivElement>(null);
   const [pdfBusy, setPdfBusy] = useState(false);
   const handleDownloadPdf = async () => {
-    if (!invoiceRef.current) return;
+    if (!invoice) return;
     setPdfBusy(true);
     try {
-      await downloadInvoicePdf(invoiceRef.current, `invoice-${invoice?.invoice_number || 'void'}.pdf`);
+      const fromName = profile?.business_name
+        || (profile?.display_name && profile.display_name !== 'My Account' ? profile.display_name : 'Your business name');
+      const fromSub = profile?.business_name && profile?.display_name && profile.display_name !== 'My Account' ? profile.display_name : null;
+      const fmtDate = (d?: string | null) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : null;
+      await generateInvoicePdf({
+        invoiceNumber: invoice.invoice_number,
+        createdAt: fmtDate(invoice.created_at) || '',
+        dueDate: fmtDate(invoice.due_date),
+        status: invoice.status,
+        from: { name: fromName, sub: fromSub, wallet: embeddedWallet?.address, email: profile?.email, site: profile?.website },
+        to: { name: client?.name || '—', company: client?.company, wallet: client?.wallet_address, email: client?.email },
+        item: { title: invoice.title, description: invoice.description },
+        amount: Number(invoice.amount_usd),
+        notes: null,
+        payment: {
+          network: SUPPORTED_CHAINS.find(c => c.id === (invoice.paid_chain || selectedChain))?.name || 'Base',
+          method: invoice.paid_token ? `On-chain · ${invoice.paid_token}` : 'On-chain',
+          wallet: embeddedWallet?.address,
+          paidOn: invoice.paid_at ? new Date(invoice.paid_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : null,
+          txHash: invoice.tx_hash || null,
+        },
+        qrDataUrl: qrUrl || null,
+      });
     } catch (err) {
       console.error('PDF export failed:', err);
     } finally {
@@ -196,7 +217,7 @@ export default function InvoiceDetail() {
 
           {/* ── Left — INVOICE DOCUMENT (matches VOID reference) ── */}
           <div>
-            <div ref={invoiceRef} className="void-card invoice-doc" style={{
+            <div className="void-card invoice-doc" style={{
               position: 'relative', background: '#000000',
               border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px',
               padding: isMobile ? '24px 18px 20px' : '40px 40px 28px', overflow: 'hidden',
