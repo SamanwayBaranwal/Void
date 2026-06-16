@@ -116,8 +116,8 @@ export default function WalletPage() {
                 </div>
                 <div>
                   <p style={{ fontSize: '14px', fontWeight: 600, color: '#F5F5F5' }}>Privy Embedded Wallet</p>
-                  <p style={{ fontSize: '11px', color: '#00FFB2', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '2px', fontFamily: 'JetBrains Mono, monospace' }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#00FFB2', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+                  <p style={{ fontSize: '11px', color: '#6EE7B7', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '2px', fontFamily: 'JetBrains Mono, monospace' }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#6EE7B7', display: 'inline-block', animation: 'pulse 2s infinite' }} />
                     ACTIVE · SECURED BY PRIVY
                   </p>
                 </div>
@@ -133,7 +133,7 @@ export default function WalletPage() {
                     {privyWallet.address}
                   </code>
                   {iconBtn(() => copy(privyWallet.address, 'privy'),
-                    copied === 'privy' ? <Check size={13} color="#00FFB2" /> : <Copy size={13} color="#6B7280" />
+                    copied === 'privy' ? <Check size={13} color="#6EE7B7" /> : <Copy size={13} color="#6B7280" />
                   )}
                 </div>
                 <p style={{ fontSize: '11px', color: '#444444', fontFamily: 'JetBrains Mono, monospace', marginTop: '6px' }}>
@@ -238,7 +238,7 @@ export default function WalletPage() {
                       </code>
                     </div>
                     <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-                      {iconBtn(() => copy(w.address, w.id), copied === w.id ? <Check size={12} color="#00FFB2" /> : <Copy size={12} color="#6B7280" />)}
+                      {iconBtn(() => copy(w.address, w.id), copied === w.id ? <Check size={12} color="#6EE7B7" /> : <Copy size={12} color="#6B7280" />)}
                       {idx !== 0 && (
                         <>
                           {iconBtn(async () => { if (privyUser) { await setPrimaryWallet(privyUser.id, w.id); loadWallets(); } }, <Star size={12} color="#FBBF24" />)}
@@ -276,7 +276,7 @@ export default function WalletPage() {
                 { label: 'Business profile', stored: true },
               ].map(({ label, stored }) => (
                 <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ width: '20px', height: '20px', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, flexShrink: 0, background: stored ? 'rgba(0,255,178,0.08)' : 'rgba(255,77,77,0.08)', color: stored ? '#00FFB2' : '#FF4D4D', border: `1px solid ${stored ? 'rgba(0,255,178,0.2)' : 'rgba(255,77,77,0.2)'}` }}>
+                  <span style={{ width: '20px', height: '20px', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, flexShrink: 0, background: stored ? 'rgba(110,231,183,0.08)' : 'rgba(255,77,77,0.08)', color: stored ? '#6EE7B7' : '#FF4D4D', border: `1px solid ${stored ? 'rgba(110,231,183,0.2)' : 'rgba(255,77,77,0.2)'}` }}>
                     {stored ? '✓' : '✗'}
                   </span>
                   <span style={{ fontSize: '13px', color: stored ? '#F5F5F5' : '#444444', textDecoration: stored ? 'none' : 'line-through' }}>
@@ -316,7 +316,7 @@ export default function WalletPage() {
 
             <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer', marginBottom: '18px' }}>
               <input type="checkbox" checked={ackChecked} onChange={e => setAckChecked(e.target.checked)}
-                style={{ marginTop: '2px', width: '16px', height: '16px', accentColor: '#00FFB2', flexShrink: 0, cursor: 'pointer' }} />
+                style={{ marginTop: '2px', width: '16px', height: '16px', accentColor: '#6EE7B7', flexShrink: 0, cursor: 'pointer' }} />
               <span style={{ fontSize: '12px', color: '#C9CDD4', lineHeight: 1.6, fontFamily: 'JetBrains Mono, monospace' }}>
                 I understand I am <strong style={{ color: '#F5F5F5' }}>solely responsible for the security of my wallet</strong>, and I will never share my private key or seed phrase with anyone.
               </span>

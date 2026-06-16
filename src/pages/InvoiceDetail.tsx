@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { usePrivy, useWallets, getEmbeddedConnectedWallet } from '@privy-io/react-auth';
 import { supabase } from '../lib/supabase';
 import {
-  generatePaymentInstructionQR, SUPPORTED_CHAINS, SUPPORTED_TOKENS, formatWalletAddress,
+  generatePaymentInstructionQR, generateUrlQR, SUPPORTED_CHAINS, SUPPORTED_TOKENS, formatWalletAddress,
   captureBaselineBlocks, scanAllChainsForPayment, getExplorerTxUrl,
 } from '../lib/wallet';
 import Layout from '../components/Layout';
@@ -24,6 +24,7 @@ export default function InvoiceDetail() {
   const [profile, setProfile]             = useState<any>(null);
   const [loading, setLoading]             = useState(true);
   const [qrUrl, setQrUrl]                 = useState('');
+  const [payQrUrl, setPayQrUrl]           = useState('');
   const [selectedChain, setSelectedChain] = useState('base');
   const [selectedToken, setSelectedToken] = useState('USDC');
   const [linkCopied, setLinkCopied]       = useState(false);
@@ -61,7 +62,7 @@ export default function InvoiceDetail() {
           paidOn: invoice.paid_at ? new Date(invoice.paid_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : null,
           txHash: invoice.tx_hash || null,
         },
-        qrDataUrl: qrUrl || null,
+        qrDataUrl: payQrUrl || qrUrl || null,
       });
     } catch (err) {
       console.error('PDF export failed:', err);
@@ -72,6 +73,8 @@ export default function InvoiceDetail() {
 
   useEffect(() => { if (privyUser) loadInvoice(); }, [id, privyUser]);
   useEffect(() => { if (embeddedWallet?.address && invoice) generateQR(); }, [embeddedWallet, selectedChain, selectedToken, invoice]);
+  // Pay-link QR — a plain HTTPS URL any phone camera can scan to open the pay page
+  useEffect(() => { generateUrlQR(payLink).then(setPayQrUrl).catch(() => {}); }, [id]);
 
   const loadInvoice = async () => {
     if (!privyUser || !id) return;
@@ -194,14 +197,14 @@ export default function InvoiceDetail() {
       <div className="invoice-print-area" style={{ maxWidth: '860px', margin: '0 auto' }}>
 
         {/* Top nav */}
-        <div className="no-print" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+        <div className="no-print" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', gap: isMobile ? '14px' : 0, marginBottom: '24px' }}>
           <button onClick={() => navigate('/invoices')}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B7280', fontSize: '13px', fontFamily: 'JetBrains Mono, monospace', display: 'flex', alignItems: 'center', gap: '6px' }}
+            style={{ alignSelf: 'flex-start', background: 'none', border: 'none', cursor: 'pointer', color: '#6B7280', fontSize: '13px', fontFamily: 'JetBrains Mono, monospace', display: 'flex', alignItems: 'center', gap: '6px' }}
             onMouseEnter={e => (e.currentTarget.style.color = '#F5F5F5')}
             onMouseLeave={e => (e.currentTarget.style.color = '#6B7280')}>
             <ArrowLeft size={14} /> Invoices
           </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
             {/* Pay-link validity chip */}
             {invoice.status !== 'paid' && (() => {
               const min = invoice.link_ttl_minutes ?? 30;
@@ -209,17 +212,17 @@ export default function InvoiceDetail() {
               const isExpired = min > 0 && Date.now() > new Date(invoice.created_at).getTime() + min * 60000;
               return (
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '6px 10px', fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', borderRadius: '6px', background: isExpired ? 'rgba(255,77,77,0.06)' : 'rgba(255,255,255,0.03)', color: isExpired ? '#FF4D4D' : '#6B7280', border: `1px solid ${isExpired ? 'rgba(255,77,77,0.25)' : 'rgba(255,255,255,0.08)'}` }}>
-                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: isExpired ? '#FF4D4D' : '#00FFB2', display: 'inline-block' }} />
+                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: isExpired ? '#FF4D4D' : '#6EE7B7', display: 'inline-block' }} />
                   {isExpired ? 'Link expired' : `Link: ${label}`}
                 </span>
               );
             })()}
             <button onClick={copyPayLink}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', fontSize: '12px', fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', borderRadius: '6px', background: 'transparent', color: linkCopied ? '#00FFB2' : '#F5F5F5', border: `1px solid ${linkCopied ? 'rgba(0,255,178,0.4)' : 'rgba(255,255,255,0.12)'}`, transition: 'all 0.15s' }}>
+              style={{ flex: isMobile ? 1 : undefined, justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '6px', padding: isMobile ? '11px 14px' : '7px 14px', fontSize: '12px', fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', borderRadius: '6px', background: 'transparent', color: linkCopied ? '#6EE7B7' : '#F5F5F5', border: `1px solid ${linkCopied ? 'rgba(110,231,183,0.4)' : 'rgba(255,255,255,0.12)'}`, transition: 'all 0.15s' }}>
               {linkCopied ? <><Check size={13} /> Link Copied</> : <><Share2 size={13} /> Copy Pay Link</>}
             </button>
             <button onClick={handleDownloadPdf} disabled={pdfBusy}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px', fontSize: '12px', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', cursor: pdfBusy ? 'default' : 'pointer', borderRadius: '6px', background: '#F5F5F5', color: '#080808', border: 'none', opacity: pdfBusy ? 0.7 : 1 }}>
+              style={{ flex: isMobile ? 1 : undefined, justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '6px', padding: isMobile ? '11px 14px' : '7px 14px', fontSize: '12px', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', cursor: pdfBusy ? 'default' : 'pointer', borderRadius: '6px', background: '#F5F5F5', color: '#080808', border: 'none', opacity: pdfBusy ? 0.7 : 1 }}>
               {pdfBusy ? <><Loader size={13} className="void-spin" /> Generating…</> : <><Download size={13} /> Download PDF</>}
             </button>
           </div>
@@ -272,7 +275,7 @@ export default function InvoiceDetail() {
                   )}
                   <div>
                     <p style={{ fontSize: '9px', color: '#6B7280', letterSpacing: '0.1em', marginBottom: '3px' }}>STATUS</p>
-                    <p style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: invoice.status === 'paid' ? '#00FFB2' : invoice.status === 'overdue' ? '#FF4D4D' : '#FBBF24', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
+                    <p style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: invoice.status === 'paid' ? '#6EE7B7' : invoice.status === 'overdue' ? '#FF4D4D' : '#FBBF24', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
                       <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'currentColor', boxShadow: '0 0 8px currentColor' }} />
                       {invoice.status}
                     </p>
@@ -287,14 +290,14 @@ export default function InvoiceDetail() {
                   #{invoice.invoice_number}
                 </h1>
                 {invoice.status === 'paid' && (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(0,255,178,0.1)', color: '#00FFB2', border: '1px solid rgba(0,255,178,0.25)', padding: '5px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(110,231,183,0.1)', color: '#6EE7B7', border: '1px solid rgba(110,231,183,0.25)', padding: '5px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em' }}>
                     ● PAYMENT CONFIRMED
                   </span>
                 )}
               </div>
 
               {/* FROM / TO */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isMobile ? '16px' : '32px', marginBottom: '32px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '24px' : '32px', marginBottom: '32px' }}>
                 {[
                   {
                     label: 'FROM', icon: 'dots',
@@ -332,20 +335,35 @@ export default function InvoiceDetail() {
 
               {/* Line items */}
               <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', overflow: 'hidden', marginBottom: '32px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr 0.8fr', padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <span style={{ fontSize: '10px', color: '#6B7280', letterSpacing: '0.1em' }}>ITEM</span>
-                  <span style={{ fontSize: '10px', color: '#6B7280', letterSpacing: '0.1em' }}>DESCRIPTION</span>
-                  <span style={{ fontSize: '10px', color: '#6B7280', letterSpacing: '0.1em', textAlign: 'right' }}>AMOUNT</span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr 0.8fr', padding: '18px 20px', alignItems: 'start' }}>
-                  <span style={{ fontSize: '13px', color: '#F5F5F5', fontWeight: 500 }}>01. {invoice.title}</span>
-                  <span style={{ fontSize: '12px', color: '#9CA3AF', lineHeight: 1.6 }}>{invoice.description || '—'}</span>
-                  <span style={{ fontSize: '13px', color: '#F5F5F5', textAlign: 'right' }}>${invoice.amount_usd.toLocaleString()}</span>
-                </div>
+                {isMobile ? (
+                  /* Mobile: stacked card — no cramped 3-column squeeze */
+                  <div style={{ padding: '16px 16px 18px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '12px', marginBottom: invoice.description ? '10px' : 0 }}>
+                      <span style={{ fontSize: '14px', color: '#F5F5F5', fontWeight: 600 }}>01. {invoice.title}</span>
+                      <span style={{ fontSize: '15px', color: '#F5F5F5', fontWeight: 700, whiteSpace: 'nowrap' }}>${invoice.amount_usd.toLocaleString()}</span>
+                    </div>
+                    {invoice.description && (
+                      <p style={{ fontSize: '12px', color: '#9CA3AF', lineHeight: 1.6, margin: 0 }}>{invoice.description}</p>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr 0.8fr', padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                      <span style={{ fontSize: '10px', color: '#6B7280', letterSpacing: '0.1em' }}>ITEM</span>
+                      <span style={{ fontSize: '10px', color: '#6B7280', letterSpacing: '0.1em' }}>DESCRIPTION</span>
+                      <span style={{ fontSize: '10px', color: '#6B7280', letterSpacing: '0.1em', textAlign: 'right' }}>AMOUNT</span>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr 0.8fr', padding: '18px 20px', alignItems: 'start' }}>
+                      <span style={{ fontSize: '13px', color: '#F5F5F5', fontWeight: 500 }}>01. {invoice.title}</span>
+                      <span style={{ fontSize: '12px', color: '#9CA3AF', lineHeight: 1.6 }}>{invoice.description || '—'}</span>
+                      <span style={{ fontSize: '13px', color: '#F5F5F5', textAlign: 'right' }}>${invoice.amount_usd.toLocaleString()}</span>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* NOTES + TOTAL */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '28px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '24px' : '40px', marginBottom: '28px' }}>
                 <div>
                   <p style={{ fontSize: '9px', color: '#6B7280', letterSpacing: '0.12em', marginBottom: '12px' }}>NOTES</p>
                   <p style={{ fontSize: '12px', color: '#9CA3AF', lineHeight: 1.7, marginBottom: '20px' }}>
@@ -372,7 +390,7 @@ export default function InvoiceDetail() {
               </div>
 
               {/* PAYMENT DETAILS + QR */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', paddingTop: '24px', borderTop: '1px dashed rgba(255,255,255,0.1)', marginBottom: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '20px' : '40px', paddingTop: '24px', borderTop: '1px dashed rgba(255,255,255,0.1)', marginBottom: '24px' }}>
                 <div>
                   <p style={{ fontSize: '9px', color: '#6B7280', letterSpacing: '0.12em', marginBottom: '14px' }}>PAYMENT DETAILS</p>
                   {[
@@ -390,19 +408,19 @@ export default function InvoiceDetail() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', marginBottom: '10px' }}>
                       <span style={{ fontSize: '11px', color: '#6B7280' }}>Transaction</span>
                       <a href={getExplorerTxUrl(invoice.paid_chain || 'ethereum', invoice.tx_hash)} target="_blank" rel="noopener noreferrer"
-                        style={{ fontSize: '11px', color: '#00FFB2', textAlign: 'right', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+                        style={{ fontSize: '11px', color: '#6EE7B7', textAlign: 'right', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
                         {invoice.tx_hash.slice(0, 8)}…{invoice.tx_hash.slice(-6)} ↗
                       </a>
                     </div>
                   )}
                 </div>
                 <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '18px', display: 'flex', gap: '16px', alignItems: 'center' }}>
-                  <div style={{ width: '88px', height: '88px', background: qrUrl ? 'white' : '#0A0A0A', borderRadius: '6px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                    {qrUrl ? <img src={qrUrl} alt="QR" style={{ width: '100%', height: '100%' }} /> : <QrCode size={36} color="#333" />}
+                  <div style={{ width: '88px', height: '88px', background: payQrUrl ? 'white' : '#0A0A0A', borderRadius: '6px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: payQrUrl ? '5px' : 0 }}>
+                    {payQrUrl ? <img src={payQrUrl} alt="Scan to pay" style={{ width: '100%', height: '100%' }} /> : <QrCode size={36} color="#333" />}
                   </div>
                   <div>
-                    <p style={{ fontSize: '12px', color: '#F5F5F5', fontWeight: 600, marginBottom: '6px', lineHeight: 1.4 }}>Scan to view invoice on-chain</p>
-                    <p style={{ fontSize: '10px', color: '#6B7280', lineHeight: 1.6 }}>Verify this invoice and payment on the blockchain.</p>
+                    <p style={{ fontSize: '12px', color: '#F5F5F5', fontWeight: 600, marginBottom: '6px', lineHeight: 1.4 }}>Scan to pay this invoice</p>
+                    <p style={{ fontSize: '10px', color: '#6B7280', lineHeight: 1.6 }}>Point your phone camera here to open the secure payment page.</p>
                   </div>
                 </div>
               </div>
@@ -471,10 +489,10 @@ export default function InvoiceDetail() {
 
             {/* On-chain auto-verify status */}
             {invoice.status !== 'paid' && watching && (
-              <div className="void-card" style={{ borderColor: 'rgba(0,255,178,0.2)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Loader size={16} color="#00FFB2" className="void-spin" />
+              <div className="void-card" style={{ borderColor: 'rgba(110,231,183,0.2)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Loader size={16} color="#6EE7B7" className="void-spin" />
                 <div>
-                  <p style={{ fontSize: '12px', fontWeight: 600, color: '#00FFB2', fontFamily: 'JetBrains Mono, monospace' }}>Watching on-chain…</p>
+                  <p style={{ fontSize: '12px', fontWeight: 600, color: '#6EE7B7', fontFamily: 'JetBrains Mono, monospace' }}>Watching on-chain…</p>
                   <p style={{ fontSize: '10px', color: '#6B7280', marginTop: '2px', fontFamily: 'JetBrains Mono, monospace' }}>Auto-confirms when payment lands.</p>
                 </div>
               </div>
@@ -486,9 +504,9 @@ export default function InvoiceDetail() {
                 <CheckCircle size={15} /> Mark as Paid Manually
               </button>
             ) : (
-              <div className="void-card" style={{ textAlign: 'center', borderColor: 'rgba(0,255,178,0.2)' }}>
-                <CheckCircle size={24} color="#00FFB2" style={{ margin: '0 auto 8px' }} />
-                <p style={{ fontSize: '13px', fontWeight: 600, color: '#00FFB2' }}>Payment Received</p>
+              <div className="void-card" style={{ textAlign: 'center', borderColor: 'rgba(110,231,183,0.2)' }}>
+                <CheckCircle size={24} color="#6EE7B7" style={{ margin: '0 auto 8px' }} />
+                <p style={{ fontSize: '13px', fontWeight: 600, color: '#6EE7B7' }}>Payment Received</p>
                 {invoice.paid_at && (
                   <p style={{ fontSize: '11px', color: '#6B7280', marginTop: '4px', fontFamily: 'JetBrains Mono, monospace' }}>
                     {new Date(invoice.paid_at).toLocaleDateString()}

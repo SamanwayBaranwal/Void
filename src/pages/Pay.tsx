@@ -16,9 +16,9 @@ function AddressHL({ address, size = 12 }: { address: string; size?: number }) {
   const tail = address.slice(-4);
   return (
     <code style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: size, wordBreak: 'break-all', lineHeight: 1.5 }}>
-      <span style={{ color: '#00FFB2', fontWeight: 700, background: 'rgba(0,255,178,0.08)', padding: '1px 2px', borderRadius: '2px' }}>{head}</span>
+      <span style={{ color: '#6EE7B7', fontWeight: 700, background: 'rgba(110,231,183,0.08)', padding: '1px 2px', borderRadius: '2px' }}>{head}</span>
       <span style={{ color: '#4B5563' }}>{mid}</span>
-      <span style={{ color: '#00FFB2', fontWeight: 700, background: 'rgba(0,255,178,0.08)', padding: '1px 2px', borderRadius: '2px' }}>{tail}</span>
+      <span style={{ color: '#6EE7B7', fontWeight: 700, background: 'rgba(110,231,183,0.08)', padding: '1px 2px', borderRadius: '2px' }}>{tail}</span>
     </code>
   );
 }
@@ -51,7 +51,7 @@ function PixelCard({ children, style }: { children: React.ReactNode; style?: Rea
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string; border: string; label: string }> = {
-    paid:    { bg: 'rgba(0,255,178,0.08)',   color: '#00FFB2', border: 'rgba(0,255,178,0.2)',   label: 'PAYMENT CONFIRMED' },
+    paid:    { bg: 'rgba(110,231,183,0.08)',   color: '#6EE7B7', border: 'rgba(110,231,183,0.2)',   label: 'PAYMENT CONFIRMED' },
     pending: { bg: 'rgba(107,114,128,0.08)', color: '#6B7280', border: 'rgba(107,114,128,0.2)', label: 'AWAITING PAYMENT' },
     overdue: { bg: 'rgba(255,77,77,0.08)',   color: '#FF4D4D', border: 'rgba(255,77,77,0.2)',   label: 'OVERDUE' },
   };
@@ -354,10 +354,10 @@ export default function Pay() {
 
                 {/* Live on-chain verification status */}
                 {watching && (
-                  <div style={{ marginTop: '14px', padding: '12px 14px', background: 'rgba(0,255,178,0.04)', border: '1px solid rgba(0,255,178,0.18)', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <Loader size={14} color="#00FFB2" className="void-spin" />
+                  <div style={{ marginTop: '14px', padding: '12px 14px', background: 'rgba(110,231,183,0.04)', border: '1px solid rgba(110,231,183,0.18)', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Loader size={14} color="#6EE7B7" className="void-spin" />
                     <div>
-                      <p style={{ ...MONO, fontSize: '12px', color: '#00FFB2', fontWeight: 500 }}>Auto-verifying on-chain…</p>
+                      <p style={{ ...MONO, fontSize: '12px', color: '#6EE7B7', fontWeight: 500 }}>Auto-verifying on-chain…</p>
                       <p style={{ ...MONO, fontSize: '10px', color: '#6B7280', marginTop: '2px' }}>
                         Confirms automatically the moment your USDC/USDT payment lands.
                       </p>
@@ -379,8 +379,8 @@ export default function Pay() {
 
             {/* Paid state CTA */}
             {invoice.status === 'paid' && (
-              <div style={{ marginTop: '20px', padding: '14px', background: 'rgba(0,255,178,0.06)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: '6px', textAlign: 'center' }}>
-                <p style={{ ...MONO, fontSize: '13px', color: '#00FFB2', fontWeight: 500 }}>✓ This invoice has been paid</p>
+              <div style={{ marginTop: '20px', padding: '14px', background: 'rgba(110,231,183,0.06)', border: '1px solid rgba(110,231,183,0.2)', borderRadius: '6px', textAlign: 'center' }}>
+                <p style={{ ...MONO, fontSize: '13px', color: '#6EE7B7', fontWeight: 500 }}>✓ This invoice has been paid</p>
                 {invoice.paid_at && (
                   <p style={{ ...MONO, fontSize: '11px', color: '#6B7280', marginTop: '4px' }}>
                     Paid on {new Date(invoice.paid_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -388,7 +388,7 @@ export default function Pay() {
                 )}
                 {invoice.tx_hash && (
                   <a href={getExplorerTxUrl(invoice.paid_chain || 'ethereum', invoice.tx_hash)} target="_blank" rel="noopener noreferrer"
-                    style={{ ...MONO, fontSize: '11px', color: '#00FFB2', marginTop: '8px', display: 'inline-block', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+                    style={{ ...MONO, fontSize: '11px', color: '#6EE7B7', marginTop: '8px', display: 'inline-block', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
                     View transaction on-chain ↗
                   </a>
                 )}
@@ -406,7 +406,7 @@ export default function Pay() {
           { Icon: Lock,        title: 'No sign-up',    desc: 'Pay directly. No account, no card needed.' },
         ].map(({ Icon, title, desc }) => (
           <div key={title} style={{ background: '#050505', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', padding: '14px' }}>
-            <Icon size={16} color="#00FFB2" strokeWidth={1.8} />
+            <Icon size={16} color="#6EE7B7" strokeWidth={1.8} />
             <p style={{ ...MONO, fontSize: '12px', fontWeight: 600, color: '#F5F5F5', margin: '8px 0 4px' }}>{title}</p>
             <p style={{ ...MONO, fontSize: '10px', color: '#6B7280', lineHeight: 1.5 }}>{desc}</p>
           </div>
@@ -475,13 +475,13 @@ export default function Pay() {
             <div style={{ background: '#000000', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', padding: '14px', marginBottom: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <p style={{ ...MONO, fontSize: '10px', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>SEND TO</p>
-                <span style={{ ...MONO, fontSize: '8px', color: '#00FFB2', letterSpacing: '0.06em' }}>✓ VERIFY HIGHLIGHTED CHARS</span>
+                <span style={{ ...MONO, fontSize: '8px', color: '#6EE7B7', letterSpacing: '0.06em' }}>✓ VERIFY HIGHLIGHTED CHARS</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div style={{ flex: 1, minWidth: 0 }}><AddressHL address={walletAddress} /></div>
                 <button onClick={copyAddress}
                   style={{ width: '32px', height: '32px', background: '#0D0D0D', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '5px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
-                  {copied ? <Check size={13} color="#00FFB2" /> : <Copy size={13} color="#6B7280" />}
+                  {copied ? <Check size={13} color="#6EE7B7" /> : <Copy size={13} color="#6B7280" />}
                 </button>
               </div>
             </div>
@@ -502,8 +502,8 @@ export default function Pay() {
             </div>
 
             {/* Paying from an exchange */}
-            <div style={{ background: 'rgba(0,255,178,0.04)', border: '1px solid rgba(0,255,178,0.15)', borderRadius: '6px', padding: '12px 14px', marginBottom: '16px' }}>
-              <p style={{ ...MONO, fontSize: '10px', color: '#00FFB2', letterSpacing: '0.06em', marginBottom: '8px' }}>● PAYING FROM AN EXCHANGE? (BINANCE · COINBASE · OKX…)</p>
+            <div style={{ background: 'rgba(110,231,183,0.04)', border: '1px solid rgba(110,231,183,0.15)', borderRadius: '6px', padding: '12px 14px', marginBottom: '16px' }}>
+              <p style={{ ...MONO, fontSize: '10px', color: '#6EE7B7', letterSpacing: '0.06em', marginBottom: '8px' }}>● PAYING FROM AN EXCHANGE? (BINANCE · COINBASE · OKX…)</p>
               <p style={{ ...MONO, fontSize: '11px', color: '#9CA3AF', lineHeight: 1.7 }}>
                 Withdraw exactly <strong style={{ color: '#F5F5F5' }}>{Number(invoice.amount_usd).toLocaleString('en-US', { minimumFractionDigits: 2 })} {selectedToken}</strong> on the <strong style={{ color: '#F5F5F5' }}>{chainName}</strong> network to the address above. No wallet needed — we detect &amp; confirm it automatically.
               </p>
@@ -517,7 +517,7 @@ export default function Pay() {
 
             {/* Pay with Wallet — real one-click payment */}
             <button onClick={handlePayWithWallet} disabled={paying}
-              style={{ width: '100%', padding: '14px', background: '#00FFB2', color: '#000000', border: 'none', borderRadius: '5px', fontSize: '14px', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', cursor: paying ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '10px', opacity: paying ? 0.7 : 1, transition: 'opacity 0.15s' }}>
+              style={{ width: '100%', padding: '14px', background: '#6EE7B7', color: '#000000', border: 'none', borderRadius: '5px', fontSize: '14px', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', cursor: paying ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '10px', opacity: paying ? 0.7 : 1, transition: 'opacity 0.15s' }}>
               {paying ? <><Loader size={15} className="void-spin" /> Confirm in your wallet…</> : <><Wallet size={15} /> Pay {Number(invoice.amount_usd).toLocaleString('en-US', { minimumFractionDigits: 2 })} {selectedToken} with Wallet</>}
             </button>
             {payError && (
@@ -526,7 +526,7 @@ export default function Pay() {
 
             {/* Auto-verify status */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '14px' }}>
-              <Loader size={12} color="#00FFB2" className="void-spin" />
+              <Loader size={12} color="#6EE7B7" className="void-spin" />
               <p style={{ ...MONO, fontSize: '11px', color: '#6B7280' }}>or scan the QR — we auto-detect payment on-chain</p>
             </div>
 

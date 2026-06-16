@@ -219,7 +219,7 @@ export default function Profile() {
               {/* Feedback */}
               {error && <div style={{ padding: '10px 12px', background: 'rgba(255,77,77,0.08)', border: '1px solid rgba(255,77,77,0.2)', borderRadius: '5px', color: '#FF4D4D', fontSize: '12px' }}>{error}</div>}
               {success && (
-                <div style={{ padding: '10px 12px', background: 'rgba(0,255,178,0.08)', border: '1px solid rgba(0,255,178,0.2)', borderRadius: '5px', color: '#00FFB2', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '7px' }}>
+                <div style={{ padding: '10px 12px', background: 'rgba(110,231,183,0.08)', border: '1px solid rgba(110,231,183,0.2)', borderRadius: '5px', color: '#6EE7B7', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '7px' }}>
                   <Check size={13} /> {success}
                 </div>
               )}
@@ -267,7 +267,7 @@ export default function Profile() {
                   </p>
                   <button
                     onClick={() => { navigator.clipboard.writeText(embeddedWallet.address); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'transparent', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '5px 10px', color: copied ? '#00FFB2' : '#6B7280', fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', width: '100%', justifyContent: 'center' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'transparent', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '5px 10px', color: copied ? '#6EE7B7' : '#6B7280', fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', width: '100%', justifyContent: 'center' }}>
                     {copied ? <Check size={11} /> : <Copy size={11} />}
                     {copied ? 'Copied!' : 'Copy Address'}
                   </button>

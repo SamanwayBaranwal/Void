@@ -180,6 +180,22 @@ export function formatWalletAddress(address: string): string {
 }
 
 /**
+ * Generate a QR code that encodes a plain URL (e.g. the public /pay link).
+ * This is the reliable, universal QR: ANY phone camera can scan it and open
+ * the payment page — no special wallet-URI support required.
+ */
+export async function generateUrlQR(url: string): Promise<string> {
+  const QRCode = await import('qrcode') as any;
+  return QRCode.default.toDataURL(url, {
+    errorCorrectionLevel: 'M',
+    type: 'image/png',
+    width: 320,
+    margin: 1,
+    color: { dark: '#000000', light: '#ffffff' },
+  });
+}
+
+/**
  * Generate a payment QR code using the standard ERC-20 transfer URI (EIP-681).
  */
 export async function generatePaymentInstructionQR(

@@ -87,7 +87,7 @@ export default function Payments() {
         {/* Summary cards */}
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)', gap: '12px', marginBottom: '20px' }}>
           {[
-            { label: 'Total Received', value: `$${fmt(totalIn)}`, sub: `${transactions.filter(t => t.type === 'incoming').length} incoming`, color: '#00FFB2' },
+            { label: 'Total Received', value: `$${fmt(totalIn)}`, sub: `${transactions.filter(t => t.type === 'incoming').length} incoming`, color: '#6EE7B7' },
             { label: 'Total Sent',     value: '$0.00',             sub: '0 outgoing',                                                         color: '#6B7280' },
             { label: 'Net Balance',    value: `$${fmt(totalIn)}`, sub: 'revenue',                                                             color: '#F5F5F5' },
           ].map((s, i) => (
@@ -163,14 +163,14 @@ export default function Payments() {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '3px 8px', borderRadius: '3px', fontSize: '10px', fontWeight: 600,
-                        background: tx.type === 'incoming' ? 'rgba(0,255,178,0.06)' : 'rgba(255,77,77,0.06)',
-                        color: tx.type === 'incoming' ? '#00FFB2' : '#FF4D4D',
-                        border: `1px solid ${tx.type === 'incoming' ? 'rgba(0,255,178,0.15)' : 'rgba(255,77,77,0.15)'}`,
+                        background: tx.type === 'incoming' ? 'rgba(110,231,183,0.06)' : 'rgba(255,77,77,0.06)',
+                        color: tx.type === 'incoming' ? '#6EE7B7' : '#FF4D4D',
+                        border: `1px solid ${tx.type === 'incoming' ? 'rgba(110,231,183,0.15)' : 'rgba(255,77,77,0.15)'}`,
                       }}>
                         {tx.type === 'incoming' ? <ArrowDownLeft size={10} /> : <ArrowUpRight size={10} />}
                         {tx.type === 'incoming' ? 'Incoming' : 'Outgoing'}
                       </span>
-                      <span style={{ fontSize: '15px', color: tx.type === 'incoming' ? '#00FFB2' : '#FF4D4D' }}>
+                      <span style={{ fontSize: '15px', color: tx.type === 'incoming' ? '#6EE7B7' : '#FF4D4D' }}>
                         {tx.type === 'incoming' ? '+' : '-'}${fmt(tx.amount)}
                       </span>
                     </div>
@@ -210,9 +210,9 @@ export default function Payments() {
                         display: 'inline-flex', alignItems: 'center', gap: '5px',
                         padding: '3px 8px', borderRadius: '3px', fontSize: '10px',
                         fontFamily: 'JetBrains Mono, monospace', fontWeight: 600,
-                        background: tx.type === 'incoming' ? 'rgba(0,255,178,0.06)' : 'rgba(255,77,77,0.06)',
-                        color: tx.type === 'incoming' ? '#00FFB2' : '#FF4D4D',
-                        border: `1px solid ${tx.type === 'incoming' ? 'rgba(0,255,178,0.15)' : 'rgba(255,77,77,0.15)'}`,
+                        background: tx.type === 'incoming' ? 'rgba(110,231,183,0.06)' : 'rgba(255,77,77,0.06)',
+                        color: tx.type === 'incoming' ? '#6EE7B7' : '#FF4D4D',
+                        border: `1px solid ${tx.type === 'incoming' ? 'rgba(110,231,183,0.15)' : 'rgba(255,77,77,0.15)'}`,
                       }}>
                         {tx.type === 'incoming' ? <ArrowDownLeft size={10} /> : <ArrowUpRight size={10} />}
                         {tx.type === 'incoming' ? 'Incoming' : 'Outgoing'}
@@ -225,7 +225,7 @@ export default function Payments() {
                       </div>
                     </td>
                     <td style={{ ...TD, textAlign: 'right' }}>
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: tx.type === 'incoming' ? '#00FFB2' : '#FF4D4D' }}>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: tx.type === 'incoming' ? '#6EE7B7' : '#FF4D4D' }}>
                         {tx.type === 'incoming' ? '+' : '-'}${fmt(tx.amount)}
                       </span>
                     </td>

@@ -30,7 +30,7 @@ async function bootstrap() {
         },
         appearance: {
           theme: '#000000',
-          accentColor: '#00FFB2',
+          accentColor: '#6EE7B7',
           showWalletLoginFirst: false,
         },
         // EVM only — avoids MetaMask / Solana injection conflicts

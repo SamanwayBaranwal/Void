@@ -42,7 +42,7 @@
     --void-text-secondary: #6B7280;
     --void-cta-bg: #F5F5F5;
     --void-cta-text: #080808;
-    --void-confirmed: #00FFB2;
+    --void-confirmed: #6EE7B7;
     --void-overdue: #FF4D4D;
     --void-warning: #FBBF24;
     --void-pending: #6B7280;
@@ -165,9 +165,9 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #00FFB210;
-    color: #00FFB2;
-    border: 1px solid #00FFB230;
+    background: #6EE7B710;
+    color: #6EE7B7;
+    border: 1px solid #6EE7B730;
     padding: 4px 10px;
     border-radius: 4px;
     font-size: 11px;
@@ -230,9 +230,9 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #00FFB210;
-    color: #00FFB2;
-    border: 1px solid #00FFB230;
+    background: #6EE7B710;
+    color: #6EE7B7;
+    border: 1px solid #6EE7B730;
     padding: 4px 10px;
     border-radius: 4px;
     font-size: 11px;
@@ -439,13 +439,13 @@
   }
 
   .btn-success {
-    background: rgba(0, 255, 178, 0.08);
-    color: #00FFB2;
+    background: rgba(110,231,183, 0.08);
+    color: #6EE7B7;
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 500;
     font-size: 14px;
     padding: 10px 20px;
-    border: 1px solid rgba(0, 255, 178, 0.2);
+    border: 1px solid rgba(110,231,183, 0.2);
     border-radius: 6px;
     cursor: pointer;
     display: inline-flex;
@@ -455,8 +455,8 @@
   }
 
   .btn-success:hover {
-    background: rgba(0, 255, 178, 0.15);
-    border-color: rgba(0, 255, 178, 0.35);
+    background: rgba(110,231,183, 0.15);
+    border-color: rgba(110,231,183, 0.35);
   }
 
   /* TABLES */

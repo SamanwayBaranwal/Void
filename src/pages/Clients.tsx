@@ -180,7 +180,7 @@ export default function Clients() {
                           {client.wallet_address && ` · ${client.wallet_address.slice(0, 6)}…${client.wallet_address.slice(-4)}`}
                         </p>
                       </div>
-                      <span style={{ fontSize: '13px', color: paid > 0 ? '#00FFB2' : '#3A3A3A', flexShrink: 0 }}>${fmt(paid)}</span>
+                      <span style={{ fontSize: '13px', color: paid > 0 ? '#6EE7B7' : '#3A3A3A', flexShrink: 0 }}>${fmt(paid)}</span>
                       <button onClick={() => handleDelete(client.id)}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3A3A3A', padding: '4px', flexShrink: 0 }}>✕</button>
                     </div>
@@ -228,7 +228,7 @@ export default function Clients() {
                         <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: '#C9CDD4' }}>{invCount}</span>
                       </td>
                       <td style={{ ...TD, textAlign: 'right' }}>
-                        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: paid > 0 ? '#00FFB2' : '#3A3A3A' }}>
+                        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: paid > 0 ? '#6EE7B7' : '#3A3A3A' }}>
                           ${fmt(paid)}
                         </span>
                       </td>

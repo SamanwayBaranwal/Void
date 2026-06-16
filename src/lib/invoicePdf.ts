@@ -23,7 +23,7 @@ const C = {
   grey:  [120, 128, 140] as [number, number, number],
   dim:   [80, 88, 100] as [number, number, number],
   faint: [55, 60, 70] as [number, number, number],
-  green: [0, 255, 178] as [number, number, number],
+  green: [110,231,183] as [number, number, number],
   line:  [38, 40, 46] as [number, number, number],
   card:  [8, 9, 11] as [number, number, number],
 };

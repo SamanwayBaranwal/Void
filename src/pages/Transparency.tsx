@@ -51,12 +51,12 @@ const DB_TABLES = [
 ];
 
 const KEY_FACTS = [
-  { icon: Key, title: 'Your private key', accent: '#6B7280', body: 'Generated inside a Privy Trusted Execution Environment (TEE) — a secure hardware enclave. It never leaves that enclave in plain text. VOID\'s code never touches it. When you click "View Private Key", it opens inside a Privy-hosted iframe on privy.io — our JavaScript cannot read what is inside that iframe.', verdict: 'We never see it. Privy never shares it. You can export it any time.', verdictColor: '#00FFB2' },
-  { icon: EyeOff, title: 'Your seed phrase', accent: '#6B7280', body: 'Never generated or stored by VOID. Privy manages the embedded wallet using a threshold key-sharing model (no single party holds the full key). If you use "View Private Key", Privy can derive a seed phrase for export purposes inside their secure iframe — but it is never sent to our servers.', verdict: 'We never see it. Never stored in our database.', verdictColor: '#00FFB2' },
+  { icon: Key, title: 'Your private key', accent: '#6B7280', body: 'Generated inside a Privy Trusted Execution Environment (TEE) — a secure hardware enclave. It never leaves that enclave in plain text. VOID\'s code never touches it. When you click "View Private Key", it opens inside a Privy-hosted iframe on privy.io — our JavaScript cannot read what is inside that iframe.', verdict: 'We never see it. Privy never shares it. You can export it any time.', verdictColor: '#6EE7B7' },
+  { icon: EyeOff, title: 'Your seed phrase', accent: '#6B7280', body: 'Never generated or stored by VOID. Privy manages the embedded wallet using a threshold key-sharing model (no single party holds the full key). If you use "View Private Key", Privy can derive a seed phrase for export purposes inside their secure iframe — but it is never sent to our servers.', verdict: 'We never see it. Never stored in our database.', verdictColor: '#6EE7B7' },
   { icon: Globe, title: 'Your public wallet address', accent: '#F5F5F5', body: 'This is the 0x… address you share with clients to receive payments. It is public by design — that\'s how blockchain works. We store it in our database linked to your privy_id so we can display it in invoices and the wallet section.', verdict: 'Stored in our database. Public information by design.', verdictColor: '#6B7280' },
   { icon: Database, title: 'Your invoice and client data', accent: '#F5F5F5', body: 'Stored in Supabase (PostgreSQL). Row Level Security (RLS) is enabled — every row has your privy_id and every query in the app filters by it. Even a raw database access would show a mix of all users\' rows with no way to identify who\'s who without the privy_id.', verdict: 'Stored in our database. Isolated to your account.', verdictColor: '#6B7280' },
-  { icon: Globe, title: 'On-chain transactions', accent: '#00FFB2', body: 'When your client pays you, they send USDC or USDT from their wallet directly to yours, peer-to-peer on the blockchain. This transaction is publicly visible on the blockchain — that is the nature of crypto and not something any platform can change. VOID is not involved in this transaction at all.', verdict: 'Public on the blockchain. VOID has no involvement.', verdictColor: '#00FFB2' },
-  { icon: Lock, title: 'Authentication', accent: '#00FFB2', body: 'Login is handled entirely by Privy. We never receive or store your Google OAuth tokens or email verification codes. When you log in, Privy gives us a unique identifier (privy_id) — that\'s all we use to identify you. There are no passwords.', verdict: 'Auth by Privy. We receive only a privy_id.', verdictColor: '#00FFB2' },
+  { icon: Globe, title: 'On-chain transactions', accent: '#6EE7B7', body: 'When your client pays you, they send USDC or USDT from their wallet directly to yours, peer-to-peer on the blockchain. This transaction is publicly visible on the blockchain — that is the nature of crypto and not something any platform can change. VOID is not involved in this transaction at all.', verdict: 'Public on the blockchain. VOID has no involvement.', verdictColor: '#6EE7B7' },
+  { icon: Lock, title: 'Authentication', accent: '#6EE7B7', body: 'Login is handled entirely by Privy. We never receive or store your Google OAuth tokens or email verification codes. When you log in, Privy gives us a unique identifier (privy_id) — that\'s all we use to identify you. There are no passwords.', verdict: 'Auth by Privy. We receive only a privy_id.', verdictColor: '#6EE7B7' },
 ];
 
 const INFRA = [
@@ -99,7 +99,7 @@ export default function Transparency() {
             <span style={{ fontSize: '14px', fontWeight: 600, color: '#F5F5F5', letterSpacing: '0.06em' }}>VOID</span>
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ ...mono, fontSize: '10px', color: '#00FFB2', background: 'rgba(0,255,178,0.08)', border: '1px solid rgba(0,255,178,0.2)', padding: '4px 10px', borderRadius: '4px', letterSpacing: '0.06em', fontWeight: 500 }}>
+            <span style={{ ...mono, fontSize: '10px', color: '#6EE7B7', background: 'rgba(110,231,183,0.08)', border: '1px solid rgba(110,231,183,0.2)', padding: '4px 10px', borderRadius: '4px', letterSpacing: '0.06em', fontWeight: 500 }}>
               FULL TRANSPARENCY
             </span>
             {user ? (
@@ -123,9 +123,9 @@ export default function Transparency() {
             className="void-float"
             style={{ display: 'block', margin: '0 auto 20px' }}
             onError={e => ((e.currentTarget as HTMLImageElement).style.display = 'none')} />
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#0A0A0A', border: '1px solid rgba(0,255,178,0.25)', borderRadius: '4px', padding: '6px 14px', marginBottom: '24px' }}>
-            <Shield size={13} color="#00FFB2" />
-            <span style={{ ...mono, fontSize: '11px', color: '#00FFB2', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Data Transparency Report</span>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#0A0A0A', border: '1px solid rgba(110,231,183,0.25)', borderRadius: '4px', padding: '6px 14px', marginBottom: '24px' }}>
+            <Shield size={13} color="#6EE7B7" />
+            <span style={{ ...mono, fontSize: '11px', color: '#6EE7B7', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Data Transparency Report</span>
           </div>
           <h1 style={{ fontSize: isMobile ? '30px' : '48px', fontWeight: 700, color: '#F5F5F5', letterSpacing: '-0.01em', lineHeight: 1.15, marginBottom: '20px' }}>
             Exactly what we store —<br />and exactly what we don't.
@@ -139,8 +139,8 @@ export default function Transparency() {
         <section style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '12px' }} className="animate-stagger">
           {[
             { icon: EyeOff, title: 'Private keys', sub: 'Never stored by us', detail: 'Privy TEE only', color: '#6B7280' },
-            { icon: Check,  title: 'Your data',    sub: 'Stored & isolated',   detail: 'Supabase · privy_id only', color: '#00FFB2' },
-            { icon: Globe,  title: 'Payments',     sub: 'Peer-to-peer',        detail: 'Blockchain · not us', color: '#00FFB2' },
+            { icon: Check,  title: 'Your data',    sub: 'Stored & isolated',   detail: 'Supabase · privy_id only', color: '#6EE7B7' },
+            { icon: Globe,  title: 'Payments',     sub: 'Peer-to-peer',        detail: 'Blockchain · not us', color: '#6EE7B7' },
           ].map(({ icon: Icon, title, sub, detail, color }) => (
             <div key={title} style={{ ...card, textAlign: 'center' }}>
               <div style={{ width: '40px', height: '40px', background: `${color}10`, border: `1px solid ${color}30`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
@@ -181,13 +181,13 @@ export default function Transparency() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : (notStored.length > 0 ? '1fr 1fr' : '1fr'), gap: '16px', marginBottom: '16px' }}>
                   <div>
-                    <p style={{ ...mono, fontSize: '10px', color: '#00FFB2', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 600 }}>
+                    <p style={{ ...mono, fontSize: '10px', color: '#6EE7B7', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 600 }}>
                       <Check size={10} /> What IS stored
                     </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       {stored.map(item => (
                         <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '12px', color: '#F5F5F5' }}>
-                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#00FFB2', flexShrink: 0, marginTop: '4px' }} />
+                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#6EE7B7', flexShrink: 0, marginTop: '4px' }} />
                           {item}
                         </div>
                       ))}
@@ -229,7 +229,7 @@ export default function Transparency() {
         <section>
           <div style={{ marginBottom: '24px' }}>
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#F5F5F5', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Key size={20} color="#00FFB2" /> Key Facts About Your Wallet &amp; Security
+              <Key size={20} color="#6EE7B7" /> Key Facts About Your Wallet &amp; Security
             </h2>
             <p style={{ fontSize: '13px', color: '#6B7280' }}>The most important questions — answered plainly.</p>
           </div>
@@ -307,7 +307,7 @@ export default function Transparency() {
 
         {/* Commitment */}
         <section>
-          <div style={{ ...card, textAlign: 'center', borderColor: 'rgba(0,255,178,0.2)', padding: isMobile ? '28px 18px' : '40px 24px' }}>
+          <div style={{ ...card, textAlign: 'center', borderColor: 'rgba(110,231,183,0.2)', padding: isMobile ? '28px 18px' : '40px 24px' }}>
             <img src="/assets/ash/ash-welcoming-onboarding.png" width={isMobile ? 120 : 150} alt=""
               style={{ display: 'block', margin: '0 auto 16px' }}
               onError={e => ((e.currentTarget as HTMLImageElement).style.display = 'none')} />

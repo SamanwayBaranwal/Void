@@ -9,7 +9,7 @@ export default {
         'void-border': '#222222',
         'void-primary': '#F5F5F5',
         'void-secondary': '#6B7280',
-        'void-confirmed': '#00FFB2',
+        'void-confirmed': '#6EE7B7',
         'void-overdue': '#FF4D4D',
         'void-warning': '#FBBF24',
         // Keep legacy surface/brand/success/warning/danger tokens so existing pages don't break
@@ -32,7 +32,7 @@ export default {
           500: '#6366f1',
           600: '#4f46e5',
         },
-        success: { 400: '#00FFB2', 500: '#00FFB2', 600: '#00cc8e' },
+        success: { 400: '#6EE7B7', 500: '#6EE7B7', 600: '#00cc8e' },
         warning: { 400: '#FBBF24', 500: '#FBBF24' },
         danger: { 400: '#FF4D4D', 500: '#FF4D4D', 600: '#cc3d3d' },
       },

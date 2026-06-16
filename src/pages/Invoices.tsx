@@ -8,7 +8,7 @@ import { TableSkeleton } from '../components/Skeleton';
 import { Plus, Search, X, SlidersHorizontal } from 'lucide-react';
 
 const STATUS_DOT: Record<string, string> = {
-  paid: '#00FFB2', pending: '#FBBF24', overdue: '#FF4D4D', cancelled: '#6B7280', draft: '#333333',
+  paid: '#6EE7B7', pending: '#FBBF24', overdue: '#FF4D4D', cancelled: '#6B7280', draft: '#333333',
 };
 
 const TABS = ['all', 'paid', 'pending', 'overdue', 'draft'] as const;

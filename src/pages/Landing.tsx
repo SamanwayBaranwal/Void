@@ -229,7 +229,7 @@ export default function Landing() {
               borderRadius: '5px', padding: '8px 16px', marginBottom: '22px', position: 'relative',
             }}>
               <Corners size={7} weight={1.5} color="rgba(255,255,255,0.55)" />
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#00FFB2', display: 'inline-block', flexShrink: 0, boxShadow: '0 0 10px #00FFB2' }} />
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#6EE7B7', display: 'inline-block', flexShrink: 0, boxShadow: '0 0 10px #6EE7B7' }} />
               <span style={{ fontSize: '12px', color: '#C9CDD4', letterSpacing: '0.16em', fontWeight: 500 }}>
                 THE INVOICE LAYER FOR WEB3
               </span>
@@ -370,7 +370,7 @@ export default function Landing() {
                     <span style="position:absolute;bottom:-1px;left:-1px;width:12px;height:12px;border-bottom:2px solid #F5F5F5;border-left:2px solid #F5F5F5;"></span>
                     <span style="position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:2px solid #F5F5F5;border-right:2px solid #F5F5F5;"></span>
                     <div style="margin-bottom:7px;"><span style="font-size:10px;font-weight:600;color:#9CA3AF;letter-spacing:0.06em;">INVOICE #INV-2024-0017</span></div>
-                    <div style="margin-bottom:14px;"><span style="background:rgba(0,255,178,0.1);color:#00FFB2;border:1px solid rgba(0,255,178,0.25);padding:3px 8px;border-radius:3px;font-size:8px;font-weight:600;letter-spacing:0.08em;">● PAYMENT CONFIRMED</span></div>
+                    <div style="margin-bottom:14px;"><span style="background:rgba(110,231,183,0.1);color:#6EE7B7;border:1px solid rgba(110,231,183,0.25);padding:3px 8px;border-radius:3px;font-size:8px;font-weight:600;letter-spacing:0.08em;">● PAYMENT CONFIRMED</span></div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
                       <div><div style="font-size:8px;color:#4B5563;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;">FROM</div><div style="font-size:12px;color:#F5F5F5;font-weight:500;margin-bottom:3px;">Void Studio</div><div style="font-size:9px;color:#6B7280;">0xA1b2...C9f8</div></div>
                       <div><div style="font-size:8px;color:#4B5563;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;">TO</div><div style="font-size:12px;color:#F5F5F5;font-weight:500;margin-bottom:3px;">Acme Labs</div><div style="font-size:9px;color:#6B7280;">0x73E9...F2a1</div></div>
@@ -477,7 +477,7 @@ export default function Landing() {
             Simple pricing. Pay in crypto.
           </p>
           <p style={{ textAlign: 'center', fontSize: '12px', color: '#6B7280', marginBottom: '48px' }}>
-            Settle with <span style={{ color: '#00FFB2' }}>USDC</span> or <span style={{ color: '#00FFB2' }}>USDT</span> on any supported chain — no cards, no banks.
+            Settle with <span style={{ color: '#6EE7B7' }}>USDC</span> or <span style={{ color: '#6EE7B7' }}>USDT</span> on any supported chain — no cards, no banks.
           </p>
 
           {/* Plan cards */}
@@ -485,13 +485,13 @@ export default function Landing() {
             {PLANS.map(plan => (
               <div key={plan.name} style={{
                 position: 'relative', background: plan.highlight ? '#070707' : '#050505',
-                border: `1px solid ${plan.highlight ? 'rgba(0,255,178,0.35)' : 'rgba(255,255,255,0.1)'}`,
+                border: `1px solid ${plan.highlight ? 'rgba(110,231,183,0.35)' : 'rgba(255,255,255,0.1)'}`,
                 borderRadius: '10px', padding: '32px 28px',
-                boxShadow: plan.highlight ? '0 0 40px rgba(0,255,178,0.06)' : 'none',
+                boxShadow: plan.highlight ? '0 0 40px rgba(110,231,183,0.06)' : 'none',
               }}>
-                <Corners size={13} weight={2} color={plan.highlight ? '#00FFB2' : '#F5F5F5'} />
+                <Corners size={13} weight={2} color={plan.highlight ? '#6EE7B7' : '#F5F5F5'} />
                 {plan.highlight && (
-                  <span style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)', background: '#00FFB2', color: '#000000', fontSize: '9px', fontWeight: 700, letterSpacing: '0.1em', padding: '4px 12px', borderRadius: '4px', whiteSpace: 'nowrap' }}>
+                  <span style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)', background: '#6EE7B7', color: '#000000', fontSize: '9px', fontWeight: 700, letterSpacing: '0.1em', padding: '4px 12px', borderRadius: '4px', whiteSpace: 'nowrap' }}>
                     BEST VALUE
                   </span>
                 )}
@@ -505,7 +505,7 @@ export default function Landing() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '11px', marginBottom: '28px' }}>
                   {plan.features.map(f => (
                     <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ color: plan.highlight ? '#00FFB2' : '#F5F5F5', fontSize: '13px', flexShrink: 0 }}>✓</span>
+                      <span style={{ color: plan.highlight ? '#6EE7B7' : '#F5F5F5', fontSize: '13px', flexShrink: 0 }}>✓</span>
                       <span style={{ fontSize: '12px', color: '#C9CDD4' }}>{f}</span>
                     </div>
                   ))}
@@ -515,7 +515,7 @@ export default function Landing() {
                   onClick={() => navigate('/auth')}
                   style={{
                     ...btn, width: '100%',
-                    background: plan.highlight ? '#00FFB2' : '#F5F5F5',
+                    background: plan.highlight ? '#6EE7B7' : '#F5F5F5',
                     color: '#000000', borderRadius: '6px', padding: '13px',
                     fontSize: '13px', fontWeight: 700, letterSpacing: '0.02em',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',

@@ -21,7 +21,7 @@ const fmtRelative = (iso: string) => {
 };
 
 const STATUS_DOT: Record<string, string> = {
-  paid: '#00FFB2', pending: '#FBBF24', overdue: '#FF4D4D', cancelled: '#6B7280', draft: '#333333',
+  paid: '#6EE7B7', pending: '#FBBF24', overdue: '#FF4D4D', cancelled: '#6B7280', draft: '#333333',
 };
 
 function RevenueChart({ invoices }: { invoices: any[] }) {
@@ -152,22 +152,22 @@ export default function Dashboard() {
         {!profile?.business_name && (!profile?.display_name || profile.display_name === 'My Account') && (
           <div style={{
             position: 'relative', background: '#050505',
-            border: '1px solid rgba(0,255,178,0.25)', borderRadius: '8px',
+            border: '1px solid rgba(110,231,183,0.25)', borderRadius: '8px',
             padding: isMobile ? '18px' : '22px 24px', marginBottom: '20px',
             display: 'flex', alignItems: 'center', gap: isMobile ? '14px' : '20px',
             flexDirection: isMobile ? 'column' : 'row', textAlign: isMobile ? 'center' : 'left',
-            boxShadow: '0 0 40px rgba(0,255,178,0.05)',
+            boxShadow: '0 0 40px rgba(110,231,183,0.05)',
           }}>
             <img src="/assets/ash/ash-welcoming-onboarding.png" alt="" width={isMobile ? 90 : 96}
               style={{ flexShrink: 0 }} onError={e => (e.currentTarget.style.display = 'none')} />
             <div style={{ flex: 1 }}>
-              <p style={{ fontSize: '10px', color: '#00FFB2', fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.14em', marginBottom: '6px' }}>● NEXT STEP</p>
+              <p style={{ fontSize: '10px', color: '#6EE7B7', fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.14em', marginBottom: '6px' }}>● NEXT STEP</p>
               <p style={{ fontSize: '15px', fontWeight: 700, color: '#F5F5F5', fontFamily: 'JetBrains Mono, monospace', marginBottom: '6px' }}>Set up your profile</p>
               <p style={{ fontSize: '12px', color: '#9CA3AF', fontFamily: 'JetBrains Mono, monospace', lineHeight: 1.65, marginBottom: '14px' }}>
                 Add your business name, email, and details so your invoices show <span style={{ color: '#F5F5F5' }}>your</span> info — not a placeholder. Takes 1 minute.
               </p>
               <button onClick={() => navigate('/profile')}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', background: '#00FFB2', color: '#000000', border: 'none', borderRadius: '5px', padding: '9px 18px', fontSize: '13px', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', transition: 'opacity 0.15s' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', background: '#6EE7B7', color: '#000000', border: 'none', borderRadius: '5px', padding: '9px 18px', fontSize: '13px', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer', transition: 'opacity 0.15s' }}
                 onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
                 onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                 Complete Profile <ChevronRight size={14} strokeWidth={2.5} />
@@ -179,7 +179,7 @@ export default function Dashboard() {
         {/* Stat cards */}
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4,1fr)', gap: '12px', marginBottom: '20px' }}>
           {([
-            { label: 'Total Invoices', value: invoices.length.toString(), sub: invTrend !== 0 ? `${invTrend > 0 ? '+' : ''}${invTrend}% from last month` : 'all time', accent: invTrend > 0 ? '#00FFB2' : invTrend < 0 ? '#FF4D4D' : '' },
+            { label: 'Total Invoices', value: invoices.length.toString(), sub: invTrend !== 0 ? `${invTrend > 0 ? '+' : ''}${invTrend}% from last month` : 'all time', accent: invTrend > 0 ? '#6EE7B7' : invTrend < 0 ? '#FF4D4D' : '' },
             { label: 'Total Revenue',  value: `$${fmt(revenue)}`,         sub: `${paid.length} paid invoices`,    accent: '' },
             { label: 'Paid Invoices',  value: paid.length.toString(),     sub: invoices.length > 0 ? `${Math.round((paid.length / invoices.length) * 100)}% of total` : '0% of total', accent: '' },
             { label: 'Outstanding',    value: `$${fmt(outstanding)}`,     sub: `${pending.length + overdue.length} invoices`, accent: '' },
@@ -273,7 +273,7 @@ export default function Dashboard() {
               <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '26px', fontWeight: 500, color: '#F5F5F5', marginBottom: '2px', lineHeight: 1 }}>
                 ${fmt(revenue)}
               </p>
-              <p style={{ fontSize: '11px', color: '#00FFB2', fontFamily: 'JetBrains Mono, monospace', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <p style={{ fontSize: '11px', color: '#6EE7B7', fontFamily: 'JetBrains Mono, monospace', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <TrendingUp size={10} /> Total earned
               </p>
 
