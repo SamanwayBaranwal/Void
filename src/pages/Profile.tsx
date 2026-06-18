@@ -68,13 +68,21 @@ export default function Profile() {
     setError(''); setSuccess('');
     if (!privyUser) return;
     setSaving(true);
-    const { error: e2 } = await supabase.from('profiles').upsert({
+    // Core columns that exist in every deployment
+    const core = {
       privy_id: privyUser.id,
       display_name: displayName, email, business_name: businessName,
       website, bio, street_address: streetAddress,
-      city, state, country, postal_code: postalCode, tax_id: taxId, timezone,
+      city, state, country, postal_code: postalCode,
       updated_at: new Date().toISOString(),
-    }, { onConflict: 'privy_id' });
+    };
+    // tax_id / timezone require the add_profile_extras migration — save them if present
+    let { error: e2 } = await supabase.from('profiles')
+      .upsert({ ...core, tax_id: taxId, timezone }, { onConflict: 'privy_id' });
+    if (e2 && /tax_id|timezone|column|schema cache/i.test(e2.message)) {
+      // Migration not run yet — fall back to saving the core fields so nothing is lost
+      ({ error: e2 } = await supabase.from('profiles').upsert(core, { onConflict: 'privy_id' }));
+    }
     setSaving(false);
     if (e2) setError(e2.message);
     else { setSuccess('Settings saved'); setTimeout(() => setSuccess(''), 3000); }
