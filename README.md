@@ -17,7 +17,7 @@ Black/monospace terminal aesthetic, on-chain auto-verified payments, and a real 
 ## 🧱 Tech stack
 
 - **Vite + React + TypeScript**
-- **Privy** — auth (email + Google) & embedded wallets
+- **Privy** — auth (email) & embedded wallets
 - **Supabase** (PostgreSQL) — profiles, clients, invoices, wallet addresses
 - **ethers v6** — on-chain payment verification via public RPCs
 - **lucide-react** — icons

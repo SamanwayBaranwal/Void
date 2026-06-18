@@ -123,13 +123,12 @@ export default function Auth() {
             onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
           >
             <VoidSymbol size={14} color="#000000" />
-            Continue with Email or Google
+            Continue with Email
           </button>
 
           <div style={{ background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', padding: '14px' }}>
             <p style={{ fontSize: '12px', color: '#6B7280', lineHeight: 1.6, textAlign: 'center' }}>
-              A popup will appear — sign in with <span style={{ color: '#F5F5F5', fontWeight: 500 }}>email</span> or{' '}
-              <span style={{ color: '#F5F5F5', fontWeight: 500 }}>Google</span>.
+              A popup will appear — sign in with your <span style={{ color: '#F5F5F5', fontWeight: 500 }}>email</span>.
               Your EVM wallet is created in the background instantly.
             </p>
           </div>

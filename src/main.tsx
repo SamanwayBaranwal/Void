@@ -22,7 +22,7 @@ async function bootstrap() {
     <PrivyProvider
       appId={import.meta.env.VITE_PRIVY_APP_ID as string}
       config={{
-        loginMethods: ['email', 'google'],
+        loginMethods: ['email'],
         embeddedWallets: {
           ethereum: {
             createOnLogin: 'all-users',

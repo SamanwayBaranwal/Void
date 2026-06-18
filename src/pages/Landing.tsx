@@ -19,7 +19,7 @@ const PLANS = [
     price: '$3',
     period: '/month',
     tagline: 'Pay as you go.',
-    features: ['Unlimited invoices', 'On-chain auto-verification', 'Real EVM wallet', 'Client management', 'Email + Google login'],
+    features: ['Unlimited invoices', 'On-chain auto-verification', 'Real EVM wallet', 'Client management', 'Email login'],
     highlight: false,
   },
   {

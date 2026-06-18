@@ -56,11 +56,11 @@ const KEY_FACTS = [
   { icon: Globe, title: 'Your public wallet address', accent: '#F5F5F5', body: 'This is the 0x… address you share with clients to receive payments. It is public by design — that\'s how blockchain works. We store it in our database linked to your privy_id so we can display it in invoices and the wallet section.', verdict: 'Stored in our database. Public information by design.', verdictColor: '#6B7280' },
   { icon: Database, title: 'Your invoice and client data', accent: '#F5F5F5', body: 'Stored in Supabase (PostgreSQL). Row Level Security (RLS) is enabled — every row has your privy_id and every query in the app filters by it. Even a raw database access would show a mix of all users\' rows with no way to identify who\'s who without the privy_id.', verdict: 'Stored in our database. Isolated to your account.', verdictColor: '#6B7280' },
   { icon: Globe, title: 'On-chain transactions', accent: '#6EE7B7', body: 'When your client pays you, they send USDC or USDT from their wallet directly to yours, peer-to-peer on the blockchain. This transaction is publicly visible on the blockchain — that is the nature of crypto and not something any platform can change. VOID is not involved in this transaction at all.', verdict: 'Public on the blockchain. VOID has no involvement.', verdictColor: '#6EE7B7' },
-  { icon: Lock, title: 'Authentication', accent: '#6EE7B7', body: 'Login is handled entirely by Privy. We never receive or store your Google OAuth tokens or email verification codes. When you log in, Privy gives us a unique identifier (privy_id) — that\'s all we use to identify you. There are no passwords.', verdict: 'Auth by Privy. We receive only a privy_id.', verdictColor: '#6EE7B7' },
+  { icon: Lock, title: 'Authentication', accent: '#6EE7B7', body: 'Login is handled entirely by Privy. We never receive or store your email verification codes. When you log in, Privy gives us a unique identifier (privy_id) — that\'s all we use to identify you. There are no passwords.', verdict: 'Auth by Privy. We receive only a privy_id.', verdictColor: '#6EE7B7' },
 ];
 
 const INFRA = [
-  { name: 'Authentication', provider: 'Privy', link: 'privy.io', detail: 'Handles login (email OTP, Google), embedded wallet creation, and key custody.' },
+  { name: 'Authentication', provider: 'Privy', link: 'privy.io', detail: 'Handles login (email OTP), embedded wallet creation, and key custody.' },
   { name: 'Database', provider: 'Supabase', link: 'supabase.com', detail: 'Stores profiles, wallets (address only), clients, and invoices. Hosted on AWS.' },
   { name: 'Wallet key custody', provider: 'Privy TEE', link: 'privy.io', detail: 'Private keys live in a Trusted Execution Environment — hardware-enforced isolation.' },
   { name: 'Frontend hosting', provider: 'Your device', link: '', detail: 'The React app runs in your browser. No server-side rendering, no request logging.' },
@@ -68,7 +68,7 @@ const INFRA = [
 ];
 
 const DATA_FLOW = [
-  { step: '01', event: 'You sign up / log in', flow: 'Browser → Privy (privy.io)', detail: 'Privy verifies your email OTP or Google account. Privy creates your embedded EVM wallet in a TEE. Privy returns a privy_id to our app. We create a row in the profiles table with that privy_id.' },
+  { step: '01', event: 'You sign up / log in', flow: 'Browser → Privy (privy.io)', detail: 'Privy verifies your email OTP. Privy creates your embedded EVM wallet in a TEE. Privy returns a privy_id to our app. We create a row in the profiles table with that privy_id.' },
   { step: '02', event: 'Wallet address saved', flow: 'Privy → VOID → Supabase', detail: 'Your public wallet address (0x…) is read from Privy and saved to the crypto_wallets table. Only the address is saved. The private key stays in Privy\'s TEE.' },
   { step: '03', event: 'You create an invoice', flow: 'Browser → Supabase', detail: 'Invoice data (title, amount, client, due date) is written to the invoices table tagged with your privy_id. A QR code is generated locally in your browser using your wallet address. Nothing goes to a payment processor.' },
   { step: '04', event: 'Client pays you', flow: 'Client wallet → Blockchain → Your wallet', detail: 'The client scans the QR code and sends USDC/USDT from their wallet to yours, directly on-chain. VOID is not involved. The money does not pass through our servers.' },
